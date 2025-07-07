@@ -113,9 +113,26 @@
     @apply min-h-[44px] text-base;
   }
 
+  /* Mobile optimizations */
+  @media (max-width: 768px) {
+    button {
+      @apply min-h-[48px] px-6 py-3;
+      font-size: 18px;
+    }
+    
+    input, textarea, select {
+      @apply min-h-[48px] text-lg;
+    }
+  }
+
   /* Custom focus styles for better accessibility */
   *:focus-visible {
     @apply ring-2 ring-codomi-navy ring-offset-2;
+  }
+
+  /* Smooth scrolling for chat */
+  .chat-container {
+    scroll-behavior: smooth;
   }
 }
 
@@ -138,4 +155,15 @@
 
 .codomi-heading {
   @apply text-codomi-navy font-semibold;
+}
+
+/* Mobile-first responsive design */
+@media (max-width: 640px) {
+  .codomi-card {
+    @apply p-4;
+  }
+  
+  .codomi-heading {
+    @apply text-xl;
+  }
 }

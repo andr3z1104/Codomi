@@ -8,7 +8,8 @@ import {
   Calendar,
   MessageSquare,
   Plus,
-  Search
+  Search,
+  Megaphone
 } from 'lucide-react';
 
 const Sidebar: React.FC = () => {
@@ -21,10 +22,13 @@ const Sidebar: React.FC = () => {
     { icon: Search, label: 'Gestión de Recibos', path: '/admin/receipts' },
     { icon: Plus, label: 'Análisis de Datos', path: '/admin/analytics' },
     { icon: Home, label: 'Gestión de Edificios', path: '/admin/buildings' },
+    { icon: Megaphone, label: 'Anuncios', path: '/admin/announcements' },
+    { icon: MessageSquare, label: 'Comunicación', path: '/admin/communication' },
   ];
 
   const ownerMenuItems = [
     { icon: Home, label: 'Panel de Control', path: '/owner' },
+    { icon: Megaphone, label: 'Anuncios', path: '/owner/announcements' },
     { icon: MessageSquare, label: 'Comunicación', path: '/owner/communication' },
     { icon: Search, label: 'Historial de Facturas', path: '/owner/invoices' },
     { icon: Calendar, label: 'Portal de Pagos', path: '/owner/payments' },
@@ -33,7 +37,7 @@ const Sidebar: React.FC = () => {
   const menuItems = user?.role === 'admin' ? adminMenuItems : ownerMenuItems;
 
   return (
-    <aside className="w-64 bg-white shadow-lg border-r border-gray-200">
+    <aside className="hidden md:block w-64 bg-white shadow-lg border-r border-gray-200">
       <nav className="mt-8 px-4">
         <ul className="space-y-2">
           {menuItems.map((item) => (

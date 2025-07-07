@@ -8,7 +8,11 @@ import { AuthProvider, useAuth } from "./contexts/AuthContext";
 import Layout from "./components/Layout/Layout";
 import LoginForm from "./components/Auth/LoginForm";
 import AdminDashboard from "./pages/admin/AdminDashboard";
+import AdminAnnouncements from "./pages/admin/AdminAnnouncements";
+import AdminCommunication from "./pages/admin/AdminCommunication";
 import OwnerDashboard from "./pages/owner/OwnerDashboard";
+import OwnerAnnouncements from "./pages/owner/OwnerAnnouncements";
+import OwnerCommunication from "./pages/owner/OwnerCommunication";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -47,11 +51,31 @@ const AppRoutes = () => {
             <AdminDashboard />
           </ProtectedRoute>
         } />
+        <Route path="/admin/announcements" element={
+          <ProtectedRoute allowedRoles={['admin']}>
+            <AdminAnnouncements />
+          </ProtectedRoute>
+        } />
+        <Route path="/admin/communication" element={
+          <ProtectedRoute allowedRoles={['admin']}>
+            <AdminCommunication />
+          </ProtectedRoute>
+        } />
         
         {/* Owner Routes */}
         <Route path="/owner" element={
           <ProtectedRoute allowedRoles={['owner']}>
             <OwnerDashboard />
+          </ProtectedRoute>
+        } />
+        <Route path="/owner/announcements" element={
+          <ProtectedRoute allowedRoles={['owner']}>
+            <OwnerAnnouncements />
+          </ProtectedRoute>
+        } />
+        <Route path="/owner/communication" element={
+          <ProtectedRoute allowedRoles={['owner']}>
+            <OwnerCommunication />
           </ProtectedRoute>
         } />
         
