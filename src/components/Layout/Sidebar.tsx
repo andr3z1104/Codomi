@@ -1,0 +1,62 @@
+
+import React from 'react';
+import { NavLink } from 'react-router-dom';
+import { useAuth } from '@/contexts/AuthContext';
+import { 
+  Home, 
+  User, 
+  Calendar,
+  MessageSquare,
+  Plus,
+  Search
+} from 'lucide-react';
+
+const Sidebar: React.FC = () => {
+  const { user } = useAuth();
+
+  const adminMenuItems = [
+    { icon: Home, label: 'Panel de Control', path: '/admin' },
+    { icon: User, label: 'Gestión de Propietarios', path: '/admin/owners' },
+    { icon: Calendar, label: 'Gestión Financiera', path: '/admin/finance' },
+    { icon: Search, label: 'Gestión de Recibos', path: '/admin/receipts' },
+    { icon: Plus, label: 'Análisis de Datos', path: '/admin/analytics' },
+    { icon: Home, label: 'Gestión de Edificios', path: '/admin/buildings' },
+  ];
+
+  const ownerMenuItems = [
+    { icon: Home, label: 'Panel de Control', path: '/owner' },
+    { icon: MessageSquare, label: 'Comunicación', path: '/owner/communication' },
+    { icon: Search, label: 'Historial de Facturas', path: '/owner/invoices' },
+    { icon: Calendar, label: 'Portal de Pagos', path: '/owner/payments' },
+  ];
+
+  const menuItems = user?.role === 'admin' ? adminMenuItems : ownerMenuItems;
+
+  return (
+    <aside className="w-64 bg-white shadow-lg border-r border-gray-200">
+      <nav className="mt-8 px-4">
+        <ul className="space-y-2">
+          {menuItems.map((item) => (
+            <li key={item.path}>
+              <NavLink
+                to={item.path}
+                className={({ isActive }) =>
+                  `flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-colors ${
+                    isActive
+                      ? 'bg-codomi-navy text-white'
+                      : 'text-gray-700 hover:bg-codomi-gray hover:text-codomi-navy'
+                  }`
+                }
+              >
+                <item.icon className="mr-3 h-5 w-5" />
+                {item.label}
+              </NavLink>
+            </li>
+          ))}
+        </ul>
+      </nav>
+    </aside>
+  );
+};
+
+export default Sidebar;
