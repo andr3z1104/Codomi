@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { ScrollArea } from '@/components/ui/scroll-area';
 import { MessageSquare, Send, User } from 'lucide-react';
 
 interface Message {
@@ -86,40 +87,42 @@ const AdminCommunication: React.FC = () => {
           <CardTitle className="text-lg">Chat Comunitario</CardTitle>
         </CardHeader>
         <CardContent className="flex-1 flex flex-col">
-          {/* Área de mensajes */}
-          <div className="flex-1 overflow-y-auto space-y-4 mb-4 p-4 border rounded-lg bg-gray-50">
-            {messages.map((message) => (
-              <div
-                key={message.id}
-                className={`flex gap-3 ${message.isAdmin ? 'justify-end' : 'justify-start'}`}
-              >
-                <div className={`flex gap-3 max-w-[70%] ${message.isAdmin ? 'flex-row-reverse' : 'flex-row'}`}>
-                  <Avatar className="h-8 w-8 flex-shrink-0">
-                    <AvatarFallback className={message.isAdmin ? 'bg-codomi-navy text-white' : 'bg-gray-300'}>
-                      {message.isAdmin ? 'AD' : <User className="h-4 w-4" />}
-                    </AvatarFallback>
-                  </Avatar>
-                  <div className={`space-y-1 ${message.isAdmin ? 'text-right' : 'text-left'}`}>
-                    <div className="flex items-center gap-2 text-xs text-gray-600">
-                      <span className="font-medium">{message.sender}</span>
-                      {message.apartment && <span>({message.apartment})</span>}
-                      <span>{message.timestamp}</span>
-                    </div>
-                    <div
-                      className={`p-3 rounded-lg text-sm ${
-                        message.isAdmin
-                          ? 'bg-codomi-navy text-white'
-                          : 'bg-white border shadow-sm'
-                      }`}
-                    >
-                      {message.content}
+          {/* Área de mensajes con scroll */}
+          <ScrollArea className="flex-1 mb-4 p-4 border rounded-lg bg-gray-50">
+            <div className="space-y-4">
+              {messages.map((message) => (
+                <div
+                  key={message.id}
+                  className={`flex gap-3 ${message.isAdmin ? 'justify-end' : 'justify-start'}`}
+                >
+                  <div className={`flex gap-3 max-w-[70%] ${message.isAdmin ? 'flex-row-reverse' : 'flex-row'}`}>
+                    <Avatar className="h-8 w-8 flex-shrink-0">
+                      <AvatarFallback className={message.isAdmin ? 'bg-codomi-navy text-white' : 'bg-gray-300'}>
+                        {message.isAdmin ? 'AD' : <User className="h-4 w-4" />}
+                      </AvatarFallback>
+                    </Avatar>
+                    <div className={`space-y-1 ${message.isAdmin ? 'text-right' : 'text-left'}`}>
+                      <div className="flex items-center gap-2 text-xs text-gray-600">
+                        <span className="font-medium">{message.sender}</span>
+                        {message.apartment && <span>({message.apartment})</span>}
+                        <span>{message.timestamp}</span>
+                      </div>
+                      <div
+                        className={`p-3 rounded-lg text-sm ${
+                          message.isAdmin
+                            ? 'bg-codomi-navy text-white'
+                            : 'bg-white border shadow-sm'
+                        }`}
+                      >
+                        {message.content}
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
-            ))}
-            <div ref={messagesEndRef} />
-          </div>
+              ))}
+              <div ref={messagesEndRef} />
+            </div>
+          </ScrollArea>
 
           {/* Formulario de envío */}
           <form onSubmit={handleSendMessage} className="flex gap-2">

@@ -63,7 +63,10 @@ const OwnerAnnouncements: React.FC = () => {
                   <div className="flex items-center gap-2 flex-wrap">
                     <CardTitle className="text-lg">{announcement.title}</CardTitle>
                     {announcement.isPinned && (
-                      <Badge variant="secondary" className="bg-codomi-navy text-white">
+                      <Badge 
+                        variant="secondary" 
+                        className="bg-codomi-navy text-white hover:bg-codomi-navy-dark transition-colors cursor-default"
+                      >
                         <Pin className="h-3 w-3 mr-1" />
                         Importante
                       </Badge>

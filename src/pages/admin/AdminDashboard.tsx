@@ -1,15 +1,27 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Save, X, Bell } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
+
+interface Notification {
+  id: number;
+  type: 'warning' | 'info' | 'success';
+  message: string;
+  priority: 'alta' | 'media' | 'baja';
+  saved: boolean;
+}
 
 const AdminDashboard: React.FC = () => {
-  const notifications = [
-    { id: 1, type: 'warning', message: '3 propietarios con pagos atrasados', priority: 'alta' },
-    { id: 2, type: 'info', message: 'Mantenimiento programado para el 15/12', priority: 'media' },
-    { id: 3, type: 'success', message: 'Pago de gastos comunes procesado', priority: 'baja' },
-  ];
+  const { toast } = useToast();
+  const [notifications, setNotifications] = useState<Notification[]>([
+    { id: 1, type: 'warning', message: '3 propietarios con pagos atrasados', priority: 'alta', saved: false },
+    { id: 2, type: 'info', message: 'Mantenimiento programado para el 15/12', priority: 'media', saved: false },
+    { id: 3, type: 'success', message: 'Pago de gastos comunes procesado', priority: 'baja', saved: false },
+  ]);
 
   const metrics = [
     { title: 'Morosidad', value: '12%', change: '-2%', type: 'negative' },
@@ -17,6 +29,24 @@ const AdminDashboard: React.FC = () => {
     { title: 'Gastos Pendientes', value: '$8,500', change: '0%', type: 'neutral' },
     { title: 'Unidades al Día', value: '88%', change: '+5%', type: 'positive' },
   ];
+
+  const handleSaveNotification = (id: number) => {
+    setNotifications(notifications.map(notification => 
+      notification.id === id ? { ...notification, saved: !notification.saved } : notification
+    ));
+    toast({
+      title: "Notificación guardada",
+      description: "La notificación se ha guardado correctamente",
+    });
+  };
+
+  const handleDeleteNotification = (id: number) => {
+    setNotifications(notifications.filter(notification => notification.id !== id));
+    toast({
+      title: "Notificación eliminada",
+      description: "La notificación ha sido eliminada",
+    });
+  };
 
   return (
     <div className="space-y-6">
@@ -29,17 +59,40 @@ const AdminDashboard: React.FC = () => {
 
       {/* Notifications */}
       <div className="space-y-3">
-        <h2 className="text-xl font-semibold text-codomi-navy">Notificaciones</h2>
+        <div className="flex items-center gap-2">
+          <Bell className="h-5 w-5 text-codomi-navy" />
+          <h2 className="text-xl font-semibold text-codomi-navy">Notificaciones</h2>
+        </div>
         {notifications.map((notification) => (
           <Alert key={notification.id} className="border-l-4 border-l-codomi-navy">
             <AlertDescription className="flex justify-between items-center">
               <span>{notification.message}</span>
-              <Badge 
-                variant={notification.priority === 'alta' ? 'destructive' : 'secondary'}
-                className="text-xs"
-              >
-                {notification.priority}
-              </Badge>
+              <div className="flex items-center gap-2">
+                <Badge 
+                  variant={notification.priority === 'alta' ? 'destructive' : 'secondary'}
+                  className="text-xs"
+                >
+                  {notification.priority}
+                </Badge>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => handleSaveNotification(notification.id)}
+                  className={`p-1 h-8 w-8 ${notification.saved ? 'text-codomi-navy bg-codomi-gray' : 'text-gray-500'}`}
+                  title={notification.saved ? 'Notificación guardada' : 'Guardar notificación'}
+                >
+                  <Save className="h-4 w-4" />
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => handleDeleteNotification(notification.id)}
+                  className="p-1 h-8 w-8 text-red-500 hover:text-red-700 hover:bg-red-50"
+                  title="Eliminar notificación"
+                >
+                  <X className="h-4 w-4" />
+                </Button>
+              </div>
             </AlertDescription>
           </Alert>
         ))}
