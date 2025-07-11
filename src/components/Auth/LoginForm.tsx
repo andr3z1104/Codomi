@@ -89,7 +89,8 @@ const LoginForm: React.FC = () => {
             <p className="text-sm text-gray-600 font-medium mb-2">Credenciales de prueba:</p>
             <div className="text-xs space-y-1">
               <p><strong>Administrador:</strong> admin@codomi.com / 123456</p>
-              <p><strong>Propietario:</strong> carlos@email.com / 123456</p>
+              <p><strong>Junta Directiva:</strong> carlos@email.com / 123456</p>
+              <p><strong>Propietario:</strong> maria@email.com / 123456</p>
             </div>
           </div>
         </CardContent>

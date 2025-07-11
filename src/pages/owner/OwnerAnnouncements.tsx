@@ -1,8 +1,16 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Megaphone, Calendar, Pin } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Switch } from '@/components/ui/switch';
+import { Label } from '@/components/ui/label';
+import { Megaphone, Calendar, Pin, Plus } from 'lucide-react';
+import { useAuth } from '@/contexts/AuthContext';
+import { useToast } from '@/hooks/use-toast';
 
 interface Announcement {
   id: string;
@@ -14,7 +22,9 @@ interface Announcement {
 }
 
 const OwnerAnnouncements: React.FC = () => {
-  const announcements: Announcement[] = [
+  const { user } = useAuth();
+  const { toast } = useToast();
+  const [announcements, setAnnouncements] = useState<Announcement[]>([
     {
       id: '1',
       title: 'Mantenimiento de Ascensores',
@@ -39,7 +49,43 @@ const OwnerAnnouncements: React.FC = () => {
       isPinned: false,
       author: 'Ana García'
     }
-  ];
+  ]);
+
+  const [newAnnouncement, setNewAnnouncement] = useState({
+    title: '',
+    content: '',
+    isPinned: false
+  });
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+
+  const handleCreateAnnouncement = () => {
+    if (!newAnnouncement.title.trim() || !newAnnouncement.content.trim()) {
+      toast({
+        title: "Error",
+        description: "Por favor completa todos los campos",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const announcement: Announcement = {
+      id: Date.now().toString(),
+      title: newAnnouncement.title,
+      content: newAnnouncement.content,
+      date: new Date().toISOString().split('T')[0],
+      isPinned: newAnnouncement.isPinned,
+      author: user?.name || 'Propietario'
+    };
+
+    setAnnouncements(prev => [announcement, ...prev]);
+    setNewAnnouncement({ title: '', content: '', isPinned: false });
+    setIsDialogOpen(false);
+    
+    toast({
+      title: "Anuncio creado",
+      description: "El anuncio ha sido publicado exitosamente",
+    });
+  };
 
   const sortedAnnouncements = [...announcements].sort((a, b) => {
     if (a.isPinned && !b.isPinned) return -1;
@@ -49,9 +95,64 @@ const OwnerAnnouncements: React.FC = () => {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center gap-3">
-        <Megaphone className="h-6 w-6 md:h-8 md:w-8 text-codomi-navy" />
-        <h1 className="text-2xl md:text-3xl font-bold text-codomi-navy">Anuncios</h1>
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <Megaphone className="h-6 w-6 md:h-8 md:w-8 text-codomi-navy" />
+          <h1 className="text-2xl md:text-3xl font-bold text-codomi-navy">Anuncios</h1>
+        </div>
+        
+        {user?.isBoardMember && (
+          <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+            <DialogTrigger asChild>
+              <Button className="flex items-center gap-2">
+                <Plus className="h-4 w-4" />
+                Crear Anuncio
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-[425px]">
+              <DialogHeader>
+                <DialogTitle>Crear Nuevo Anuncio</DialogTitle>
+              </DialogHeader>
+              <div className="space-y-4">
+                <div>
+                  <Label htmlFor="title">Título</Label>
+                  <Input
+                    id="title"
+                    value={newAnnouncement.title}
+                    onChange={(e) => setNewAnnouncement(prev => ({ ...prev, title: e.target.value }))}
+                    placeholder="Título del anuncio"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="content">Contenido</Label>
+                  <Textarea
+                    id="content"
+                    value={newAnnouncement.content}
+                    onChange={(e) => setNewAnnouncement(prev => ({ ...prev, content: e.target.value }))}
+                    placeholder="Describe el anuncio..."
+                    rows={4}
+                  />
+                </div>
+                <div className="flex items-center space-x-2">
+                  <Switch
+                    id="pinned"
+                    checked={newAnnouncement.isPinned}
+                    onCheckedChange={(checked) => setNewAnnouncement(prev => ({ ...prev, isPinned: checked }))}
+                  />
+                  <Label htmlFor="pinned">Marcar como importante (fijado)</Label>
+                </div>
+                <div className="flex justify-end gap-2">
+                  <Button variant="outline" onClick={() => setIsDialogOpen(false)}>
+                    Cancelar
+                  </Button>
+                  <Button onClick={handleCreateAnnouncement}>
+                    Crear Anuncio
+                  </Button>
+                </div>
+              </div>
+            </DialogContent>
+          </Dialog>
+        )}
       </div>
 
       <div className="space-y-4">
@@ -77,7 +178,7 @@ const OwnerAnnouncements: React.FC = () => {
                       <Calendar className="h-4 w-4" />
                       {announcement.date}
                     </span>
-                    <span>Administración</span>
+                    <span>{announcement.author}</span>
                   </div>
                 </div>
               </div>

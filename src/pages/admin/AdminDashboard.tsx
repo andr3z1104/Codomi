@@ -4,8 +4,10 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { X, Bell, ChevronDown, ChevronUp } from 'lucide-react';
+import { X, Bell, ChevronDown, ChevronUp, Building2, RefreshCw } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { useAuth } from '@/contexts/AuthContext';
+import BuildingSelector from '@/components/BuildingSelector';
 
 interface Notification {
   id: number;
@@ -16,6 +18,8 @@ interface Notification {
 
 const AdminDashboard: React.FC = () => {
   const { toast } = useToast();
+  const { selectedBuilding, buildings, selectBuilding } = useAuth();
+  const [showBuildingSelector, setShowBuildingSelector] = useState(!selectedBuilding);
   const [notifications, setNotifications] = useState<Notification[]>([
     { id: 1, type: 'warning', message: '3 propietarios con pagos atrasados', priority: 'alta' },
     { id: 2, type: 'info', message: 'Mantenimiento programado para el 15/12', priority: 'media' },
@@ -42,13 +46,58 @@ const AdminDashboard: React.FC = () => {
     setNotificationsCollapsed(!notificationsCollapsed);
   };
 
+  const handleBuildingChange = () => {
+    setShowBuildingSelector(true);
+  };
+
+  const handleBuildingSelected = () => {
+    setShowBuildingSelector(false);
+    toast({
+      title: "Edificio seleccionado",
+      description: `Ahora estás gestionando ${selectedBuilding?.name}`,
+    });
+  };
+
+  if (showBuildingSelector) {
+    return (
+      <div className="space-y-6">
+        <div className="flex justify-between items-center">
+          <h1 className="text-3xl font-bold text-codomi-navy">Panel de Control</h1>
+          <Badge variant="outline" className="text-sm">
+            Administrador
+          </Badge>
+        </div>
+        <BuildingSelector onSelect={handleBuildingSelected} />
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <h1 className="text-3xl font-bold text-codomi-navy">Panel de Control</h1>
-        <Badge variant="outline" className="text-sm">
-          Administrador
-        </Badge>
+        <div className="flex items-center gap-4">
+          <h1 className="text-3xl font-bold text-codomi-navy">Panel de Control</h1>
+          {selectedBuilding && (
+            <div className="flex items-center gap-2">
+              <Building2 className="h-5 w-5 text-codomi-navy" />
+              <span className="text-lg font-medium text-codomi-navy">{selectedBuilding.name}</span>
+            </div>
+          )}
+        </div>
+        <div className="flex items-center gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleBuildingChange}
+            className="flex items-center gap-2"
+          >
+            <RefreshCw className="h-4 w-4" />
+            Cambiar Edificio
+          </Button>
+          <Badge variant="outline" className="text-sm">
+            Administrador
+          </Badge>
+        </div>
       </div>
 
       {/* Notifications */}

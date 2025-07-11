@@ -81,13 +81,13 @@ const AdminCommunication: React.FC = () => {
         <h1 className="text-2xl md:text-3xl font-bold text-codomi-navy">Comunicación</h1>
       </div>
 
-      <Card className="flex-1 flex flex-col overflow-hidden">
+      <Card className="flex flex-col h-[600px]">
         <CardHeader className="flex-shrink-0">
           <CardTitle className="text-lg">Chat Comunitario</CardTitle>
         </CardHeader>
-        <CardContent className="flex-1 flex flex-col overflow-hidden p-4">
+        <CardContent className="flex-1 flex flex-col p-4 min-h-0">
           {/* Área de mensajes con scroll fijo */}
-          <div className="flex-1 overflow-y-auto mb-4 p-4 border rounded-lg bg-gray-50 space-y-4">
+          <div className="flex-1 overflow-y-auto mb-4 p-4 border rounded-lg bg-gray-50 space-y-4 min-h-0">
             {messages.map((message) => (
               <div
                 key={message.id}
