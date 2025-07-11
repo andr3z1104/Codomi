@@ -4,7 +4,6 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { ScrollArea } from '@/components/ui/scroll-area';
 import { MessageSquare, Send, User } from 'lucide-react';
 
 interface Message {
@@ -77,56 +76,54 @@ const OwnerCommunication: React.FC = () => {
   };
 
   return (
-    <div className="space-y-6 h-full">
+    <div className="space-y-6 h-full flex flex-col">
       <div className="flex items-center gap-3">
         <MessageSquare className="h-6 w-6 md:h-8 md:w-8 text-codomi-navy" />
         <h1 className="text-2xl md:text-3xl font-bold text-codomi-navy">Comunicación</h1>
       </div>
 
-      <Card className="h-[calc(100vh-200px)] flex flex-col">
-        <CardHeader>
+      <Card className="flex-1 flex flex-col overflow-hidden">
+        <CardHeader className="flex-shrink-0">
           <CardTitle className="text-lg">Chat Comunitario</CardTitle>
         </CardHeader>
-        <CardContent className="flex-1 flex flex-col">
-          {/* Área de mensajes con scroll */}
-          <ScrollArea className="flex-1 mb-4 p-4 border rounded-lg bg-gray-50">
-            <div className="space-y-4">
-              {messages.map((message) => (
-                <div
-                  key={message.id}
-                  className={`flex gap-3 ${message.isAdmin ? 'justify-start' : 'justify-end'}`}
-                >
-                  <div className={`flex gap-3 max-w-[70%] ${message.isAdmin ? 'flex-row' : 'flex-row-reverse'}`}>
-                    <Avatar className="h-8 w-8 flex-shrink-0">
-                      <AvatarFallback className={message.isAdmin ? 'bg-codomi-navy text-white' : 'bg-gray-300'}>
-                        {message.isAdmin ? 'AD' : <User className="h-4 w-4" />}
-                      </AvatarFallback>
-                    </Avatar>
-                    <div className={`space-y-1 ${message.isAdmin ? 'text-left' : 'text-right'}`}>
-                      <div className="flex items-center gap-2 text-xs text-gray-600">
-                        <span className="font-medium">{message.sender}</span>
-                        {message.apartment && <span>({message.apartment})</span>}
-                        <span>{message.timestamp}</span>
-                      </div>
-                      <div
-                        className={`p-3 rounded-lg text-sm ${
-                          message.isAdmin
-                            ? 'bg-white border shadow-sm'
-                            : 'bg-codomi-navy text-white'
-                        }`}
-                      >
-                        {message.content}
-                      </div>
+        <CardContent className="flex-1 flex flex-col overflow-hidden p-4">
+          {/* Área de mensajes con scroll fijo */}
+          <div className="flex-1 overflow-y-auto mb-4 p-4 border rounded-lg bg-gray-50 space-y-4">
+            {messages.map((message) => (
+              <div
+                key={message.id}
+                className={`flex gap-3 ${message.isAdmin ? 'justify-start' : 'justify-end'}`}
+              >
+                <div className={`flex gap-3 max-w-[70%] ${message.isAdmin ? 'flex-row' : 'flex-row-reverse'}`}>
+                  <Avatar className="h-8 w-8 flex-shrink-0">
+                    <AvatarFallback className={message.isAdmin ? 'bg-codomi-navy text-white' : 'bg-gray-300'}>
+                      {message.isAdmin ? 'AD' : <User className="h-4 w-4" />}
+                    </AvatarFallback>
+                  </Avatar>
+                  <div className={`space-y-1 ${message.isAdmin ? 'text-left' : 'text-right'}`}>
+                    <div className="flex items-center gap-2 text-xs text-gray-600">
+                      <span className="font-medium">{message.sender}</span>
+                      {message.apartment && <span>({message.apartment})</span>}
+                      <span>{message.timestamp}</span>
+                    </div>
+                    <div
+                      className={`p-3 rounded-lg text-sm ${
+                        message.isAdmin
+                          ? 'bg-white border shadow-sm'
+                          : 'bg-codomi-navy text-white'
+                      }`}
+                    >
+                      {message.content}
                     </div>
                   </div>
                 </div>
-              ))}
-              <div ref={messagesEndRef} />
-            </div>
-          </ScrollArea>
+              </div>
+            ))}
+            <div ref={messagesEndRef} />
+          </div>
 
-          {/* Formulario de envío */}
-          <form onSubmit={handleSendMessage} className="flex gap-2">
+          {/* Formulario de envío fijo */}
+          <form onSubmit={handleSendMessage} className="flex gap-2 flex-shrink-0">
             <Input
               value={newMessage}
               onChange={(e) => setNewMessage(e.target.value)}

@@ -4,7 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Save, X, Bell } from 'lucide-react';
+import { X, Bell, ChevronDown, ChevronUp } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 interface Notification {
@@ -12,16 +12,16 @@ interface Notification {
   type: 'warning' | 'info' | 'success';
   message: string;
   priority: 'alta' | 'media' | 'baja';
-  saved: boolean;
 }
 
 const AdminDashboard: React.FC = () => {
   const { toast } = useToast();
   const [notifications, setNotifications] = useState<Notification[]>([
-    { id: 1, type: 'warning', message: '3 propietarios con pagos atrasados', priority: 'alta', saved: false },
-    { id: 2, type: 'info', message: 'Mantenimiento programado para el 15/12', priority: 'media', saved: false },
-    { id: 3, type: 'success', message: 'Pago de gastos comunes procesado', priority: 'baja', saved: false },
+    { id: 1, type: 'warning', message: '3 propietarios con pagos atrasados', priority: 'alta' },
+    { id: 2, type: 'info', message: 'Mantenimiento programado para el 15/12', priority: 'media' },
+    { id: 3, type: 'success', message: 'Pago de gastos comunes procesado', priority: 'baja' },
   ]);
+  const [notificationsCollapsed, setNotificationsCollapsed] = useState(false);
 
   const metrics = [
     { title: 'Morosidad', value: '12%', change: '-2%', type: 'negative' },
@@ -30,22 +30,16 @@ const AdminDashboard: React.FC = () => {
     { title: 'Unidades al Día', value: '88%', change: '+5%', type: 'positive' },
   ];
 
-  const handleSaveNotification = (id: number) => {
-    setNotifications(notifications.map(notification => 
-      notification.id === id ? { ...notification, saved: !notification.saved } : notification
-    ));
-    toast({
-      title: "Notificación guardada",
-      description: "La notificación se ha guardado correctamente",
-    });
-  };
-
   const handleDeleteNotification = (id: number) => {
     setNotifications(notifications.filter(notification => notification.id !== id));
     toast({
       title: "Notificación eliminada",
       description: "La notificación ha sido eliminada",
     });
+  };
+
+  const toggleNotifications = () => {
+    setNotificationsCollapsed(!notificationsCollapsed);
   };
 
   return (
@@ -59,43 +53,58 @@ const AdminDashboard: React.FC = () => {
 
       {/* Notifications */}
       <div className="space-y-3">
-        <div className="flex items-center gap-2">
-          <Bell className="h-5 w-5 text-codomi-navy" />
-          <h2 className="text-xl font-semibold text-codomi-navy">Notificaciones</h2>
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <Bell className="h-5 w-5 text-codomi-navy" />
+            <h2 className="text-xl font-semibold text-codomi-navy">Notificaciones</h2>
+            <Badge variant="secondary" className="text-xs">
+              {notifications.length}
+            </Badge>
+          </div>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={toggleNotifications}
+            className="p-2 h-8 w-8 text-codomi-navy hover:bg-codomi-gray"
+          >
+            {notificationsCollapsed ? <ChevronDown className="h-4 w-4" /> : <ChevronUp className="h-4 w-4" />}
+          </Button>
         </div>
-        {notifications.map((notification) => (
-          <Alert key={notification.id} className="border-l-4 border-l-codomi-navy">
-            <AlertDescription className="flex justify-between items-center">
-              <span>{notification.message}</span>
-              <div className="flex items-center gap-2">
-                <Badge 
-                  variant={notification.priority === 'alta' ? 'destructive' : 'secondary'}
-                  className="text-xs"
-                >
-                  {notification.priority}
-                </Badge>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => handleSaveNotification(notification.id)}
-                  className={`p-1 h-8 w-8 ${notification.saved ? 'text-codomi-navy bg-codomi-gray' : 'text-gray-500'}`}
-                  title={notification.saved ? 'Notificación guardada' : 'Guardar notificación'}
-                >
-                  <Save className="h-4 w-4" />
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => handleDeleteNotification(notification.id)}
-                  className="p-1 h-8 w-8 text-red-500 hover:text-red-700 hover:bg-red-50"
-                  title="Eliminar notificación"
-                >
-                  <X className="h-4 w-4" />
-                </Button>
+
+        {!notificationsCollapsed && (
+          <div className="space-y-3">
+            {notifications.length > 0 ? (
+              notifications.map((notification) => (
+                <Alert key={notification.id} className="border-l-4 border-l-codomi-navy">
+                  <AlertDescription className="flex justify-between items-center">
+                    <span>{notification.message}</span>
+                    <div className="flex items-center gap-2">
+                      <Badge 
+                        variant={notification.priority === 'alta' ? 'destructive' : 'secondary'}
+                        className="text-xs"
+                      >
+                        {notification.priority}
+                      </Badge>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleDeleteNotification(notification.id)}
+                        className="p-1 h-8 w-8 text-red-500 hover:text-red-700 hover:bg-red-50"
+                        title="Eliminar notificación"
+                      >
+                        <X className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </AlertDescription>
+                </Alert>
+              ))
+            ) : (
+              <div className="text-center text-gray-500 py-4">
+                No hay notificaciones pendientes
               </div>
-            </AlertDescription>
-          </Alert>
-        ))}
+            )}
+          </div>
+        )}
       </div>
 
       {/* Metrics */}
