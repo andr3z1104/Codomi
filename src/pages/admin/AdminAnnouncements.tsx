@@ -123,12 +123,12 @@ const AdminAnnouncements: React.FC = () => {
                 <div className="flex-1">
                   <div className="flex items-center gap-2 flex-wrap">
                     <CardTitle className="text-lg">{announcement.title}</CardTitle>
-                    {announcement.isPinned && (
-                      <Badge variant="secondary" className="bg-codomi-navy text-white">
-                        <Pin className="h-3 w-3 mr-1" />
-                        Fijado
-                      </Badge>
-                    )}
+                     {announcement.isPinned && (
+                       <Badge variant="secondary" className="bg-primary text-primary-foreground">
+                         <Pin className="h-3 w-3 mr-1" />
+                         Fijado
+                       </Badge>
+                     )}
                   </div>
                   <div className="flex items-center gap-4 text-sm text-gray-600 mt-2">
                     <span className="flex items-center gap-1">

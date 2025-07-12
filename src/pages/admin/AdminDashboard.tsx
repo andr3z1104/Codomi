@@ -134,15 +134,15 @@ const AdminDashboard: React.FC = () => {
                       >
                         {notification.priority}
                       </Badge>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => handleDeleteNotification(notification.id)}
-                        className="p-1 h-8 w-8 text-red-500 hover:text-red-700 hover:bg-red-50"
-                        title="Eliminar notificación"
-                      >
-                        <X className="h-4 w-4" />
-                      </Button>
+                       <Button
+                         variant="ghost"
+                         size="sm"
+                         onClick={() => handleDeleteNotification(notification.id)}
+                         className="p-1 h-8 w-8 text-white bg-destructive hover:bg-destructive/80 hover:text-white"
+                         title="Eliminar notificación"
+                       >
+                         <X className="h-4 w-4" />
+                       </Button>
                     </div>
                   </AlertDescription>
                 </Alert>

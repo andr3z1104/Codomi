@@ -21,7 +21,7 @@ const Sidebar: React.FC = () => {
     { icon: Calendar, label: 'Gestión Financiera', path: '/admin/finance' },
     { icon: Search, label: 'Gestión de Recibos', path: '/admin/receipts' },
     { icon: Plus, label: 'Análisis de Datos', path: '/admin/analytics' },
-    { icon: Home, label: 'Gestión de Edificios', path: '/admin/buildings' },
+    { icon: Home, label: 'Gestión de Edificio', path: '/admin/buildings' },
     { icon: Megaphone, label: 'Anuncios', path: '/admin/announcements' },
     { icon: MessageSquare, label: 'Comunicación', path: '/admin/communication' },
   ];

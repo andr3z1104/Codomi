@@ -10,6 +10,7 @@ import LoginForm from "./components/Auth/LoginForm";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import AdminAnnouncements from "./pages/admin/AdminAnnouncements";
 import AdminCommunication from "./pages/admin/AdminCommunication";
+import AdminBuildings from "./pages/admin/AdminBuildings";
 import OwnerDashboard from "./pages/owner/OwnerDashboard";
 import OwnerAnnouncements from "./pages/owner/OwnerAnnouncements";
 import OwnerCommunication from "./pages/owner/OwnerCommunication";
@@ -59,6 +60,11 @@ const AppRoutes = () => {
         <Route path="/admin/communication" element={
           <ProtectedRoute allowedRoles={['admin']}>
             <AdminCommunication />
+          </ProtectedRoute>
+        } />
+        <Route path="/admin/buildings" element={
+          <ProtectedRoute allowedRoles={['admin']}>
+            <AdminBuildings />
           </ProtectedRoute>
         } />
         

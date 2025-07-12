@@ -25,7 +25,7 @@ const MobileSidebar: React.FC = () => {
     { icon: Calendar, label: 'Gestión Financiera', path: '/admin/finance' },
     { icon: Search, label: 'Gestión de Recibos', path: '/admin/receipts' },
     { icon: Plus, label: 'Análisis de Datos', path: '/admin/analytics' },
-    { icon: Home, label: 'Gestión de Edificios', path: '/admin/buildings' },
+    { icon: Home, label: 'Gestión de Edificio', path: '/admin/buildings' },
     { icon: Megaphone, label: 'Anuncios', path: '/admin/announcements' },
     { icon: MessageSquare, label: 'Comunicación', path: '/admin/communication' },
   ];
@@ -43,7 +43,7 @@ const MobileSidebar: React.FC = () => {
   return (
     <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger asChild>
-        <Button variant="ghost" size="icon" className="md:hidden fixed top-4 left-4 z-50">
+        <Button variant="ghost" size="icon" className="md:hidden fixed top-4 left-4 z-50 text-primary hover:text-white hover:bg-primary">
           <Menu className="h-6 w-6" />
         </Button>
       </SheetTrigger>
