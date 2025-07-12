@@ -14,6 +14,9 @@ import AdminBuildings from "./pages/admin/AdminBuildings";
 import OwnerDashboard from "./pages/owner/OwnerDashboard";
 import OwnerAnnouncements from "./pages/owner/OwnerAnnouncements";
 import OwnerCommunication from "./pages/owner/OwnerCommunication";
+import JuntaDashboard from "./pages/junta/JuntaDashboard";
+import JuntaAnnouncements from "./pages/junta/JuntaAnnouncements";
+import JuntaCommunication from "./pages/junta/JuntaCommunication";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -26,7 +29,8 @@ const ProtectedRoute = ({ children, allowedRoles }: { children: React.ReactNode;
   }
   
   if (!allowedRoles.includes(user.role)) {
-    return <Navigate to={user.role === 'admin' ? '/admin' : '/owner'} replace />;
+    const redirectPath = user.role === 'admin' ? '/admin' : user.role === 'junta' ? '/junta' : '/owner';
+    return <Navigate to={redirectPath} replace />;
   }
   
   return <>{children}</>;
@@ -40,7 +44,7 @@ const AppRoutes = () => {
       <Route path="/" element={<Layout />}>
         <Route index element={
           user ? (
-            <Navigate to={user.role === 'admin' ? '/admin' : '/owner'} replace />
+            <Navigate to={user.role === 'admin' ? '/admin' : user.role === 'junta' ? '/junta' : '/owner'} replace />
           ) : (
             <LoginForm />
           )
@@ -82,6 +86,23 @@ const AppRoutes = () => {
         <Route path="/owner/communication" element={
           <ProtectedRoute allowedRoles={['owner']}>
             <OwnerCommunication />
+          </ProtectedRoute>
+        } />
+        
+        {/* Junta Routes */}
+        <Route path="/junta" element={
+          <ProtectedRoute allowedRoles={['junta']}>
+            <JuntaDashboard />
+          </ProtectedRoute>
+        } />
+        <Route path="/junta/announcements" element={
+          <ProtectedRoute allowedRoles={['junta']}>
+            <JuntaAnnouncements />
+          </ProtectedRoute>
+        } />
+        <Route path="/junta/communication" element={
+          <ProtectedRoute allowedRoles={['junta']}>
+            <JuntaCommunication />
           </ProtectedRoute>
         } />
         

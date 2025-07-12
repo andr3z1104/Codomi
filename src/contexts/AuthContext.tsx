@@ -1,7 +1,7 @@
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
 
-export type UserRole = 'admin' | 'owner';
+export type UserRole = 'admin' | 'owner' | 'junta';
 
 export interface User {
   id: string;
@@ -10,31 +10,47 @@ export interface User {
   role: UserRole;
   apartment?: string; // Only for owners
   isBoardMember?: boolean; // Only for owners - Parte de la Junta de Condominio
+  buildingId?: string; // For junta members - assigned building
 }
 
 export interface Building {
   id: string;
   name: string;
   address: string;
+  condominiumId: string;
+}
+
+export interface Condominium {
+  id: string;
+  name: string;
 }
 
 interface AuthContextType {
   user: User | null;
   selectedBuilding: Building | null;
+  selectedCondominium: Condominium | null;
   buildings: Building[];
+  condominiums: Condominium[];
   login: (email: string, password: string) => Promise<boolean>;
   logout: () => void;
   selectBuilding: (building: Building) => void;
+  selectCondominium: (condominium: Condominium) => void;
   isLoading: boolean;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
+// Mock condominiums for demo purposes
+const mockCondominiums: Condominium[] = [
+  { id: '1', name: 'Condominio Los Almendros' },
+  { id: '2', name: 'Condominio Vista Hermosa' }
+];
+
 // Mock buildings for demo purposes
 const mockBuildings: Building[] = [
-  { id: '1', name: 'Torre Norte', address: 'Av. Principal 123' },
-  { id: '2', name: 'Torre Sur', address: 'Av. Secundaria 456' },
-  { id: '3', name: 'Edificio Central', address: 'Calle Central 789' }
+  { id: '1', name: 'Torre Norte', address: 'Av. Principal 123', condominiumId: '1' },
+  { id: '2', name: 'Torre Sur', address: 'Av. Secundaria 456', condominiumId: '1' },
+  { id: '3', name: 'Edificio Central', address: 'Calle Central 789', condominiumId: '2' }
 ];
 
 // Mock users for demo purposes
@@ -60,25 +76,38 @@ const mockUsers: User[] = [
     role: 'owner',
     apartment: 'Apt 205',
     isBoardMember: false
+  },
+  {
+    id: '4',
+    name: 'Roberto Silva',
+    email: 'roberto@email.com',
+    role: 'junta',
+    buildingId: '1'
   }
 ];
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [selectedBuilding, setSelectedBuilding] = useState<Building | null>(null);
+  const [selectedCondominium, setSelectedCondominium] = useState<Condominium | null>(null);
   const [buildings] = useState<Building[]>(mockBuildings);
+  const [condominiums] = useState<Condominium[]>(mockCondominiums);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     // Check if user is already logged in
     const savedUser = localStorage.getItem('codomi_user');
     const savedBuilding = localStorage.getItem('codomi_selected_building');
+    const savedCondominium = localStorage.getItem('codomi_selected_condominium');
     
     if (savedUser) {
       setUser(JSON.parse(savedUser));
     }
     if (savedBuilding) {
       setSelectedBuilding(JSON.parse(savedBuilding));
+    }
+    if (savedCondominium) {
+      setSelectedCondominium(JSON.parse(savedCondominium));
     }
     setIsLoading(false);
   }, []);
@@ -105,8 +134,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const logout = () => {
     setUser(null);
     setSelectedBuilding(null);
+    setSelectedCondominium(null);
     localStorage.removeItem('codomi_user');
     localStorage.removeItem('codomi_selected_building');
+    localStorage.removeItem('codomi_selected_condominium');
   };
 
   const selectBuilding = (building: Building) => {
@@ -114,14 +145,24 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     localStorage.setItem('codomi_selected_building', JSON.stringify(building));
   };
 
+  const selectCondominium = (condominium: Condominium) => {
+    setSelectedCondominium(condominium);
+    setSelectedBuilding(null); // Reset building selection when changing condominium
+    localStorage.setItem('codomi_selected_condominium', JSON.stringify(condominium));
+    localStorage.removeItem('codomi_selected_building');
+  };
+
   return (
     <AuthContext.Provider value={{ 
       user, 
       selectedBuilding, 
+      selectedCondominium,
       buildings, 
+      condominiums,
       login, 
       logout, 
-      selectBuilding, 
+      selectBuilding,
+      selectCondominium, 
       isLoading 
     }}>
       {children}

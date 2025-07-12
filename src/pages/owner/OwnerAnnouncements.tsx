@@ -101,14 +101,18 @@ const OwnerAnnouncements: React.FC = () => {
           <h1 className="text-2xl md:text-3xl font-bold text-codomi-navy">Anuncios</h1>
         </div>
         
-        {user?.isBoardMember && (
-          <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-            <DialogTrigger asChild>
-              <Button className="flex items-center gap-2">
-                <Plus className="h-4 w-4" />
-                Crear Anuncio
-              </Button>
-            </DialogTrigger>
+        {(user?.isBoardMember || user?.role === 'junta') && (
+          <div className="flex flex-col items-center gap-4 w-full">
+            <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+              <DialogTrigger asChild>
+                <Button 
+                  size="lg" 
+                  className="flex items-center gap-3 px-8 py-4 text-lg font-semibold bg-codomi-navy hover:bg-codomi-navy-dark transition-colors shadow-lg"
+                >
+                  <Plus className="h-6 w-6" />
+                  Crear Nuevo Anuncio
+                </Button>
+              </DialogTrigger>
             <DialogContent className="sm:max-w-[425px]">
               <DialogHeader>
                 <DialogTitle>Crear Nuevo Anuncio</DialogTitle>
@@ -152,6 +156,7 @@ const OwnerAnnouncements: React.FC = () => {
               </div>
             </DialogContent>
           </Dialog>
+          </div>
         )}
       </div>
 

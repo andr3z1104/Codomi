@@ -34,7 +34,19 @@ const Sidebar: React.FC = () => {
     { icon: Calendar, label: 'Portal de Pagos', path: '/owner/payments' },
   ];
 
-  const menuItems = user?.role === 'admin' ? adminMenuItems : ownerMenuItems;
+  const juntaMenuItems = [
+    { icon: Home, label: 'Panel de Control', path: '/junta' },
+    { icon: Megaphone, label: 'Anuncios', path: '/junta/announcements' },
+    { icon: MessageSquare, label: 'Comunicación', path: '/junta/communication' },
+  ];
+
+  const getMenuItems = () => {
+    if (user?.role === 'admin') return adminMenuItems;
+    if (user?.role === 'junta') return juntaMenuItems;
+    return ownerMenuItems;
+  };
+
+  const menuItems = getMenuItems();
 
   return (
     <aside className="hidden md:block w-64 bg-white shadow-lg border-r border-gray-200">
