@@ -27,9 +27,6 @@ const LoginForm: React.FC = () => {
       // Check if user is admin and needs to select condominium/building
       const loggedInUser = JSON.parse(localStorage.getItem('codomi_user') || '{}');
       if (loggedInUser.role === 'admin') {
-        // Clear any previous selections for fresh start
-        localStorage.removeItem('codomi_selected_condominium');
-        localStorage.removeItem('codomi_selected_building');
         setStep('condominium');
       }
     }
@@ -45,7 +42,7 @@ const LoginForm: React.FC = () => {
   };
 
   // Show condominium selection for admin after login
-  if (user?.role === 'admin' && step === 'condominium' && !selectedCondominium) {
+  if (user?.role === 'admin' && step === 'condominium') {
     return (
       <div className="min-h-screen flex items-center justify-center bg-codomi-gray p-4">
         <Card className="w-full max-w-2xl">
@@ -66,7 +63,7 @@ const LoginForm: React.FC = () => {
   }
 
   // Show building selection for admin after condominium selection
-  if (user?.role === 'admin' && step === 'building' && selectedCondominium && !selectedBuilding) {
+  if (user?.role === 'admin' && step === 'building' && selectedCondominium) {
     const condominiumBuildings = buildings.filter(b => b.condominiumId === selectedCondominium.id);
     
     return (

@@ -123,6 +123,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     if (foundUser && password === '123456') {
       setUser(foundUser);
       localStorage.setItem('codomi_user', JSON.stringify(foundUser));
+      
+      // Clear selections for admin users to force fresh selection
+      if (foundUser.role === 'admin') {
+        setSelectedCondominium(null);
+        setSelectedBuilding(null);
+        localStorage.removeItem('codomi_selected_condominium');
+        localStorage.removeItem('codomi_selected_building');
+      }
+      
       setIsLoading(false);
       return true;
     }
