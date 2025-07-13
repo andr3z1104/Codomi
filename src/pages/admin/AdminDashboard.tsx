@@ -4,7 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { X, Bell, ChevronDown, ChevronUp, Building2, RefreshCw } from 'lucide-react';
+import { X, Bell, ChevronDown, ChevronUp, Building2, RefreshCw, Trash2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/contexts/AuthContext';
 import BuildingSelector from '@/components/BuildingSelector';
@@ -21,6 +21,7 @@ const AdminDashboard: React.FC = () => {
   const { toast } = useToast();
   const { selectedBuilding, selectedCondominium, buildings, selectBuilding } = useAuth();
   const [showBuildingSelector, setShowBuildingSelector] = useState(!selectedBuilding);
+  const [showCondominiumSelector, setShowCondominiumSelector] = useState(false);
   const [notifications, setNotifications] = useState<Notification[]>([
     { id: 1, type: 'warning', message: '3 propietarios con pagos atrasados', priority: 'alta' },
     { id: 2, type: 'info', message: 'Mantenimiento programado para el 15/12', priority: 'media' },
@@ -39,7 +40,7 @@ const AdminDashboard: React.FC = () => {
     setNotifications(notifications.filter(notification => notification.id !== id));
     toast({
       title: "Notificación eliminada",
-      description: "La notificación ha sido eliminada",
+      description: "La notificación ha sido eliminada correctamente",
     });
   };
 
@@ -48,20 +49,37 @@ const AdminDashboard: React.FC = () => {
   };
 
   const handleBuildingChange = () => {
-    setShowBuildingSelector(true);
+    setShowCondominiumSelector(true);
+    setShowBuildingSelector(false);
   };
 
   const handleCondominiumSelected = () => {
-    // Stay on the same screen to show building selector
+    setShowCondominiumSelector(false);
+    setShowBuildingSelector(true);
   };
 
   const handleBuildingSelected = () => {
     setShowBuildingSelector(false);
+    setShowCondominiumSelector(false);
     toast({
       title: "Edificio seleccionado",
       description: `Ahora estás gestionando ${selectedBuilding?.name}`,
     });
   };
+
+  if (showCondominiumSelector) {
+    return (
+      <div className="space-y-6">
+        <div className="flex justify-between items-center">
+          <h1 className="text-3xl font-bold text-codomi-navy">Panel de Control</h1>
+          <Badge variant="outline" className="text-sm">
+            Administrador
+          </Badge>
+        </div>
+        <CondominiumSelector onSelect={handleCondominiumSelected} />
+      </div>
+    );
+  }
 
   if (showBuildingSelector) {
     return (
@@ -72,24 +90,20 @@ const AdminDashboard: React.FC = () => {
             Administrador
           </Badge>
         </div>
-        {!selectedCondominium ? (
-          <CondominiumSelector onSelect={handleCondominiumSelected} />
-        ) : (
-          <BuildingSelector onSelect={handleBuildingSelected} />
-        )}
+        <BuildingSelector onSelect={handleBuildingSelected} />
       </div>
     );
   }
 
   return (
     <div className="space-y-6">
-      <div className="flex justify-between items-center">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div className="flex items-center gap-4">
-          <h1 className="text-3xl font-bold text-codomi-navy">Panel de Control</h1>
+          <h1 className="text-2xl md:text-3xl font-bold text-codomi-navy">Panel de Control</h1>
           {selectedBuilding && (
             <div className="flex items-center gap-2">
               <Building2 className="h-5 w-5 text-codomi-navy" />
-              <span className="text-lg font-medium text-codomi-navy">{selectedBuilding.name}</span>
+              <span className="text-base md:text-lg font-medium text-codomi-navy">{selectedBuilding.name}</span>
             </div>
           )}
         </div>
@@ -98,7 +112,7 @@ const AdminDashboard: React.FC = () => {
             variant="outline"
             size="sm"
             onClick={handleBuildingChange}
-            className="flex items-center gap-2"
+            className="flex items-center gap-2 text-sm"
           >
             <RefreshCw className="h-4 w-4" />
             Cambiar Edificio
@@ -135,30 +149,32 @@ const AdminDashboard: React.FC = () => {
               notifications.map((notification) => (
                 <Alert key={notification.id} className="border-l-4 border-l-codomi-navy">
                   <AlertDescription className="flex justify-between items-center">
-                    <span>{notification.message}</span>
-                    <div className="flex items-center gap-2">
+                    <span className="flex-1">{notification.message}</span>
+                    <div className="flex items-center gap-3 ml-4">
                       <Badge 
                         variant={notification.priority === 'alta' ? 'destructive' : 'secondary'}
-                        className="text-xs"
+                        className="text-xs flex-shrink-0"
                       >
                         {notification.priority}
                       </Badge>
-                       <Button
-                         variant="ghost"
-                         size="sm"
-                         onClick={() => handleDeleteNotification(notification.id)}
-                         className="p-1 h-8 w-8 text-codomi-navy bg-codomi-gray hover:bg-codomi-navy hover:text-white"
-                         title="Eliminar notificación"
-                       >
-                         <X className="h-4 w-4" />
-                       </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handleDeleteNotification(notification.id)}
+                        className="p-2 h-8 w-8 border-gray-300 text-gray-600 hover:bg-gray-100 hover:text-gray-800 hover:border-gray-400 transition-colors"
+                        title="Eliminar notificación"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
                     </div>
                   </AlertDescription>
                 </Alert>
               ))
             ) : (
-              <div className="text-center text-gray-500 py-4">
-                No hay notificaciones pendientes
+              <div className="text-center text-gray-500 py-8">
+                <Bell className="h-12 w-12 mx-auto mb-3 text-gray-300" />
+                <p className="text-base font-medium">No hay notificaciones pendientes</p>
+                <p className="text-sm text-gray-400 mt-1">Las nuevas notificaciones aparecerán aquí</p>
               </div>
             )}
           </div>
