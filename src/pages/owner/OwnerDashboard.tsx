@@ -95,7 +95,10 @@ const OwnerDashboard: React.FC = () => {
                 Vencimiento: {financialData.dueDate}
               </p>
             </div>
-            <Button className="bg-codomi-navy hover:bg-codomi-navy-dark">
+            <Button 
+              className="bg-codomi-navy hover:bg-codomi-navy-dark"
+              onClick={() => window.location.href = '/owner/payments'}
+            >
               Pagar Ahora
             </Button>
           </div>

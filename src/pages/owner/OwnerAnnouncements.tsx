@@ -165,11 +165,32 @@ const OwnerAnnouncements: React.FC = () => {
                         </p>
                       </div>
                     </div>
-                    <Switch
-                      id="pinned"
-                      checked={newAnnouncement.isPinned}
-                      onCheckedChange={(checked) => setNewAnnouncement(prev => ({ ...prev, isPinned: checked }))}
-                    />
+                    <div className="relative">
+                      <input
+                        type="checkbox"
+                        id="pinned"
+                        checked={newAnnouncement.isPinned}
+                        onChange={(e) => setNewAnnouncement(prev => ({ ...prev, isPinned: e.target.checked }))}
+                        className="sr-only"
+                      />
+                      <label 
+                        htmlFor="pinned" 
+                        className={`
+                          flex items-center justify-center w-6 h-6 border-2 rounded 
+                          cursor-pointer transition-all duration-200
+                          ${newAnnouncement.isPinned 
+                            ? 'bg-green-500 border-green-500 text-white' 
+                            : 'bg-transparent border-gray-300 hover:border-green-400'
+                          }
+                        `}
+                      >
+                        {newAnnouncement.isPinned && (
+                          <svg className="w-4 h-4" viewBox="0 0 20 20" fill="currentColor">
+                            <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                          </svg>
+                        )}
+                      </label>
+                    </div>
                   </div>
                   <div className="flex flex-col-reverse sm:flex-row justify-end gap-3 pt-4">
                     <Button 

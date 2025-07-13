@@ -27,6 +27,9 @@ const LoginForm: React.FC = () => {
       // Check if user is admin and needs to select condominium/building
       const loggedInUser = JSON.parse(localStorage.getItem('codomi_user') || '{}');
       if (loggedInUser.role === 'admin') {
+        // Clear any previous selections for fresh start
+        localStorage.removeItem('codomi_selected_condominium');
+        localStorage.removeItem('codomi_selected_building');
         setStep('condominium');
       }
     }
