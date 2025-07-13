@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { Switch } from '@/components/ui/switch';
+import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
 import { Megaphone, Calendar, Pin, Plus } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
@@ -87,11 +87,25 @@ const OwnerAnnouncements: React.FC = () => {
     });
   };
 
+  const togglePin = (id: string) => {
+    setAnnouncements(prev => prev.map(ann => 
+      ann.id === id ? { ...ann, isPinned: !ann.isPinned } : ann
+    ));
+    
+    const announcement = announcements.find(ann => ann.id === id);
+    toast({
+      title: announcement?.isPinned ? "Anuncio desfijado" : "Anuncio fijado",
+      description: announcement?.isPinned ? "El anuncio ya no está fijado" : "El anuncio ha sido fijado como importante",
+    });
+  };
+
   const sortedAnnouncements = [...announcements].sort((a, b) => {
     if (a.isPinned && !b.isPinned) return -1;
     if (!a.isPinned && b.isPinned) return 1;
     return new Date(b.date).getTime() - new Date(a.date).getTime();
   });
+
+  const canCreateAnnouncements = user?.isBoardMember || user?.role === 'junta';
 
   return (
     <div className="space-y-6">
@@ -101,7 +115,7 @@ const OwnerAnnouncements: React.FC = () => {
           <h1 className="text-2xl md:text-3xl font-bold text-codomi-navy">Anuncios</h1>
         </div>
         
-        {(user?.isBoardMember || user?.role === 'junta') && (
+        {canCreateAnnouncements && (
           <div className="flex flex-col items-center gap-4 w-full">
             <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
               <DialogTrigger asChild>
@@ -138,12 +152,14 @@ const OwnerAnnouncements: React.FC = () => {
                   />
                 </div>
                 <div className="flex items-center space-x-2">
-                  <Switch
+                  <Checkbox
                     id="pinned"
                     checked={newAnnouncement.isPinned}
-                    onCheckedChange={(checked) => setNewAnnouncement(prev => ({ ...prev, isPinned: checked }))}
+                    onCheckedChange={(checked) => setNewAnnouncement(prev => ({ ...prev, isPinned: !!checked }))}
                   />
-                  <Label htmlFor="pinned">Marcar como importante (fijado)</Label>
+                  <Label htmlFor="pinned" className="text-sm font-medium">
+                    Marcar como importante (fijado)
+                  </Label>
                 </div>
                 <div className="flex justify-end gap-2">
                   <Button variant="outline" onClick={() => setIsDialogOpen(false)}>
@@ -170,8 +186,8 @@ const OwnerAnnouncements: React.FC = () => {
                     <CardTitle className="text-lg">{announcement.title}</CardTitle>
                     {announcement.isPinned && (
                       <Badge 
-                        variant="secondary" 
-                        className="bg-codomi-navy text-white hover:bg-codomi-navy-dark transition-colors cursor-default"
+                        variant="pinned"
+                        className="cursor-default"
                       >
                         <Pin className="h-3 w-3 mr-1" />
                         Importante
@@ -186,6 +202,17 @@ const OwnerAnnouncements: React.FC = () => {
                     <span>{announcement.author}</span>
                   </div>
                 </div>
+                {canCreateAnnouncements && (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => togglePin(announcement.id)}
+                    className="flex items-center gap-1"
+                  >
+                    <Pin className="h-3 w-3" />
+                    {announcement.isPinned ? 'Desfijar' : 'Fijar'}
+                  </Button>
+                )}
               </div>
             </CardHeader>
             <CardContent>

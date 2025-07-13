@@ -8,6 +8,7 @@ import { X, Bell, ChevronDown, ChevronUp, Building2, RefreshCw } from 'lucide-re
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/contexts/AuthContext';
 import BuildingSelector from '@/components/BuildingSelector';
+import CondominiumSelector from '@/components/CondominiumSelector';
 
 interface Notification {
   id: number;
@@ -18,7 +19,7 @@ interface Notification {
 
 const AdminDashboard: React.FC = () => {
   const { toast } = useToast();
-  const { selectedBuilding, buildings, selectBuilding } = useAuth();
+  const { selectedBuilding, selectedCondominium, buildings, selectBuilding } = useAuth();
   const [showBuildingSelector, setShowBuildingSelector] = useState(!selectedBuilding);
   const [notifications, setNotifications] = useState<Notification[]>([
     { id: 1, type: 'warning', message: '3 propietarios con pagos atrasados', priority: 'alta' },
@@ -50,6 +51,10 @@ const AdminDashboard: React.FC = () => {
     setShowBuildingSelector(true);
   };
 
+  const handleCondominiumSelected = () => {
+    // Stay on the same screen to show building selector
+  };
+
   const handleBuildingSelected = () => {
     setShowBuildingSelector(false);
     toast({
@@ -67,7 +72,11 @@ const AdminDashboard: React.FC = () => {
             Administrador
           </Badge>
         </div>
-        <BuildingSelector onSelect={handleBuildingSelected} />
+        {!selectedCondominium ? (
+          <CondominiumSelector onSelect={handleCondominiumSelected} />
+        ) : (
+          <BuildingSelector onSelect={handleBuildingSelected} />
+        )}
       </div>
     );
   }
@@ -138,7 +147,7 @@ const AdminDashboard: React.FC = () => {
                          variant="ghost"
                          size="sm"
                          onClick={() => handleDeleteNotification(notification.id)}
-                         className="p-1 h-8 w-8 text-white bg-destructive hover:bg-destructive/80 hover:text-white"
+                         className="p-1 h-8 w-8 text-codomi-navy bg-codomi-gray hover:bg-codomi-navy hover:text-white"
                          title="Eliminar notificación"
                        >
                          <X className="h-4 w-4" />

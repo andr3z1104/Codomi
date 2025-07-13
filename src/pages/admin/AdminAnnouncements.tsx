@@ -124,7 +124,7 @@ const AdminAnnouncements: React.FC = () => {
                   <div className="flex items-center gap-2 flex-wrap">
                     <CardTitle className="text-lg">{announcement.title}</CardTitle>
                      {announcement.isPinned && (
-                       <Badge variant="secondary" className="bg-primary text-primary-foreground">
+                       <Badge variant="pinned">
                          <Pin className="h-3 w-3 mr-1" />
                          Fijado
                        </Badge>
