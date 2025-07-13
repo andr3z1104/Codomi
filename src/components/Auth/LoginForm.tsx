@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
@@ -79,30 +78,7 @@ const LoginForm: React.FC = () => {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="space-y-4">
-              <h3 className="text-lg font-semibold text-codomi-navy">Edificios disponibles:</h3>
-              <div className="grid grid-cols-1 gap-4">
-                {condominiumBuildings.map((building) => (
-                  <Button
-                    key={building.id}
-                    variant="outline"
-                    className="h-auto p-6 justify-start"
-                    onClick={() => {
-                      const buildingSelector = { selectBuilding: (b: any) => b };
-                      const { selectBuilding } = require('@/contexts/AuthContext');
-                      // This is a workaround - in a real app you'd use the context properly
-                      localStorage.setItem('codomi_selected_building', JSON.stringify(building));
-                      handleBuildingSelect();
-                    }}
-                  >
-                    <div className="text-left">
-                      <h4 className="font-semibold">{building.name}</h4>
-                      <p className="text-sm text-gray-600">{building.address}</p>
-                    </div>
-                  </Button>
-                ))}
-              </div>
-            </div>
+            <BuildingSelector onSelect={handleBuildingSelect} />
           </CardContent>
         </Card>
       </div>

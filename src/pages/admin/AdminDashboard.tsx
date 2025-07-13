@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -19,8 +18,8 @@ interface Notification {
 
 const AdminDashboard: React.FC = () => {
   const { toast } = useToast();
-  const { selectedBuilding, selectedCondominium, buildings, selectBuilding } = useAuth();
-  const [showBuildingSelector, setShowBuildingSelector] = useState(!selectedBuilding);
+  const { selectedBuilding, selectedCondominium, buildings, selectBuilding, selectCondominium } = useAuth();
+  const [showBuildingSelector, setShowBuildingSelector] = useState(false);
   const [showCondominiumSelector, setShowCondominiumSelector] = useState(false);
   const [notifications, setNotifications] = useState<Notification[]>([
     { id: 1, type: 'warning', message: '3 propietarios con pagos atrasados', priority: 'alta' },
@@ -49,6 +48,9 @@ const AdminDashboard: React.FC = () => {
   };
 
   const handleBuildingChange = () => {
+    // Reset selections and start with condominium selection
+    selectCondominium(null as any);
+    selectBuilding(null as any);
     setShowCondominiumSelector(true);
     setShowBuildingSelector(false);
   };

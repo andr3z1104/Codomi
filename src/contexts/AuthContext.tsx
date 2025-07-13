@@ -140,15 +140,23 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     localStorage.removeItem('codomi_selected_condominium');
   };
 
-  const selectBuilding = (building: Building) => {
+  const selectBuilding = (building: Building | null) => {
     setSelectedBuilding(building);
-    localStorage.setItem('codomi_selected_building', JSON.stringify(building));
+    if (building) {
+      localStorage.setItem('codomi_selected_building', JSON.stringify(building));
+    } else {
+      localStorage.removeItem('codomi_selected_building');
+    }
   };
 
-  const selectCondominium = (condominium: Condominium) => {
+  const selectCondominium = (condominium: Condominium | null) => {
     setSelectedCondominium(condominium);
     setSelectedBuilding(null); // Reset building selection when changing condominium
-    localStorage.setItem('codomi_selected_condominium', JSON.stringify(condominium));
+    if (condominium) {
+      localStorage.setItem('codomi_selected_condominium', JSON.stringify(condominium));
+    } else {
+      localStorage.removeItem('codomi_selected_condominium');
+    }
     localStorage.removeItem('codomi_selected_building');
   };
 

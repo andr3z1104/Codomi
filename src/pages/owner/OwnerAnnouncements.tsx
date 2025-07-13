@@ -6,8 +6,8 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
+import { Switch } from '@/components/ui/switch';
 import { Megaphone, Calendar, Pin, Plus, Star } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
@@ -109,29 +109,29 @@ const OwnerAnnouncements: React.FC = () => {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-3">
+      <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+        <div className="flex items-center gap-3 w-full md:w-auto">
           <Megaphone className="h-6 w-6 md:h-8 md:w-8 text-codomi-navy" />
           <h1 className="text-2xl md:text-3xl font-bold text-codomi-navy">Anuncios</h1>
         </div>
         
         {canCreateAnnouncements && (
-          <div className="flex flex-col items-center gap-4 w-full max-w-sm">
+          <div className="w-full md:w-auto">
             <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
               <DialogTrigger asChild>
                 <Button 
-                  size="lg" 
-                  className="w-full flex items-center justify-center gap-3 px-6 py-6 text-base md:text-lg font-semibold bg-codomi-navy hover:bg-codomi-navy-dark transition-all duration-200 shadow-lg hover:shadow-xl rounded-lg"
+                  size="default" 
+                  className="w-full md:w-auto flex items-center justify-center gap-2 px-4 py-2 text-sm md:text-base font-medium bg-codomi-navy hover:bg-codomi-navy-dark transition-all duration-200 shadow-md hover:shadow-lg rounded-lg"
                 >
-                  <Plus className="h-5 w-5 md:h-6 md:w-6" />
-                  <span className="text-center">Crear Nuevo Anuncio</span>
+                  <Plus className="h-4 w-4 md:h-5 md:w-5" />
+                  <span>Crear Anuncio</span>
                 </Button>
               </DialogTrigger>
-              <DialogContent className="sm:max-w-[425px] mx-4">
+              <DialogContent className="w-[95vw] max-w-md mx-auto">
                 <DialogHeader>
-                  <DialogTitle className="text-xl font-semibold text-codomi-navy">Crear Nuevo Anuncio</DialogTitle>
+                  <DialogTitle className="text-lg font-semibold text-codomi-navy">Crear Nuevo Anuncio</DialogTitle>
                 </DialogHeader>
-                <div className="space-y-6 py-4">
+                <div className="space-y-4 py-4">
                   <div className="space-y-2">
                     <Label htmlFor="title" className="text-sm font-medium">Título</Label>
                     <Input
@@ -153,24 +153,23 @@ const OwnerAnnouncements: React.FC = () => {
                       className="text-base resize-none"
                     />
                   </div>
-                  <div className="bg-amber-50 border border-amber-200 rounded-lg p-4">
-                    <div className="flex items-start space-x-3">
-                      <Checkbox
-                        id="pinned"
-                        checked={newAnnouncement.isPinned}
-                        onCheckedChange={(checked) => setNewAnnouncement(prev => ({ ...prev, isPinned: !!checked }))}
-                        className="mt-1"
-                      />
-                      <div className="flex-1">
-                        <Label htmlFor="pinned" className="text-sm font-medium text-amber-800 cursor-pointer flex items-center gap-2">
-                          <Star className="h-4 w-4 text-amber-600" />
-                          Marcar como anuncio importante
+                  <div className="flex items-center justify-between p-4 bg-amber-50 border border-amber-200 rounded-lg">
+                    <div className="flex items-center gap-3">
+                      <Star className="h-5 w-5 text-amber-600" />
+                      <div>
+                        <Label htmlFor="pinned" className="text-sm font-medium text-amber-800 cursor-pointer">
+                          Marcar como importante
                         </Label>
                         <p className="text-xs text-amber-700 mt-1">
-                          Los anuncios importantes aparecerán destacados y al principio de la lista
+                          Aparecerá destacado al inicio
                         </p>
                       </div>
                     </div>
+                    <Switch
+                      id="pinned"
+                      checked={newAnnouncement.isPinned}
+                      onCheckedChange={(checked) => setNewAnnouncement(prev => ({ ...prev, isPinned: checked }))}
+                    />
                   </div>
                   <div className="flex flex-col-reverse sm:flex-row justify-end gap-3 pt-4">
                     <Button 
