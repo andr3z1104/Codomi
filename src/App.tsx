@@ -11,6 +11,7 @@ import AdminDashboard from "./pages/admin/AdminDashboard";
 import AdminAnnouncements from "./pages/admin/AdminAnnouncements";
 import AdminCommunication from "./pages/admin/AdminCommunication";
 import AdminBuildings from "./pages/admin/AdminBuildings";
+import Profile from "./pages/Profile";
 import OwnerDashboard from "./pages/owner/OwnerDashboard";
 import OwnerAnnouncements from "./pages/owner/OwnerAnnouncements";
 import OwnerCommunication from "./pages/owner/OwnerCommunication";
@@ -79,6 +80,13 @@ const AppRoutes = () => {
         <Route path="/admin/buildings" element={
           <ProtectedRoute allowedRoles={['admin']}>
             <AdminBuildings />
+          </ProtectedRoute>
+        } />
+        
+        {/* Profile Route - Available for all users */}
+        <Route path="/profile" element={
+          <ProtectedRoute allowedRoles={['admin', 'owner', 'junta']}>
+            <Profile />
           </ProtectedRoute>
         } />
         

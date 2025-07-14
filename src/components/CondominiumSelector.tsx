@@ -46,10 +46,10 @@ const CondominiumSelector: React.FC<CondominiumSelectorProps> = ({ onSelect, sho
             className="h-auto p-6 justify-start"
             onClick={() => handleCondominiumSelect(condominium)}
           >
-            <div className="flex items-center gap-3 w-full">
-              <Building2 className="h-6 w-6 text-codomi-navy" />
-              <div className="text-left">
-                <h3 className="font-semibold text-lg">{condominium.name}</h3>
+            <div className="flex items-center gap-3 w-full min-w-0">
+              <Building2 className="h-6 w-6 text-codomi-navy flex-shrink-0" />
+              <div className="text-left min-w-0 flex-1">
+                <h3 className="font-semibold text-lg truncate">{condominium.name}</h3>
               </div>
             </div>
           </Button>

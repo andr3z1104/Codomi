@@ -2,10 +2,12 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/contexts/AuthContext';
-import { LogOut, User } from 'lucide-react';
+import { LogOut, User, Settings } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 const Header: React.FC = () => {
   const { user, logout } = useAuth();
+  const navigate = useNavigate();
 
   return (
     <header className="bg-codomi-navy text-white shadow-lg">
@@ -25,7 +27,17 @@ const Header: React.FC = () => {
               <div className="flex items-center space-x-2">
                 <User className="h-4 w-4 md:h-5 md:w-5" />
                 <div className="text-right">
-                  <p className="text-xs md:text-sm font-medium">{user.name}</p>
+                  <div className="flex items-center gap-2">
+                    <p className="text-xs md:text-sm font-medium">{user.name}</p>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => navigate('/profile')}
+                      className="h-6 w-6 p-0 text-white hover:bg-white/20"
+                    >
+                      <Settings className="h-3 w-3" />
+                    </Button>
+                  </div>
                   <p className="text-xs opacity-80 capitalize">
                     {user.role === 'admin' ? 'Administrador' : 'Propietario'}
                     {user.apartment && ` - ${user.apartment}`}
