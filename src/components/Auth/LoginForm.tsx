@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -16,6 +16,13 @@ const LoginForm: React.FC = () => {
   const [step, setStep] = useState<'login' | 'condominium' | 'building'>('login');
   const { login, isLoading, user, selectedCondominium, selectedBuilding, buildings, selectBuilding } = useAuth();
 
+  // Effect to handle admin flow after successful login
+  useEffect(() => {
+    if (user?.role === 'admin' && step === 'login') {
+      setStep('condominium');
+    }
+  }, [user, step]);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
@@ -23,12 +30,8 @@ const LoginForm: React.FC = () => {
     const success = await login(email, password);
     if (!success) {
       setError('Credenciales incorrectas. Intente nuevamente.');
-    } else {
-      // Check if user is admin and needs to select condominium/building
-      if (user?.role === 'admin' || (!user && email.includes('admin'))) {
-        setStep('condominium');
-      }
     }
+    // No need to manually set step here - useEffect will handle it
   };
 
   const handleCondominiumSelect = () => {
