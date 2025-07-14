@@ -1,5 +1,6 @@
 import React from 'react';
-import { Facebook, Twitter, Instagram } from 'lucide-react';
+import {SiFacebook, SiX, SiInstagram} from 'react-icons/si';
+
 
 const Footer: React.FC = () => {
   return (
@@ -13,13 +14,13 @@ const Footer: React.FC = () => {
           </div>
           <div className="flex space-x-4 mt-2">
             <a href="#" aria-label="Facebook" className="hover:text-codomi-navy-light">
-              <Facebook className="h-5 w-5" />
+              <SiFacebook className="h-5 w-5" />
             </a>
             <a href="#" aria-label="Twitter" className="hover:text-codomi-navy-light">
-              <Twitter className="h-5 w-5" />
+              <SiX className="h-5 w-5" />
             </a>
             <a href="#" aria-label="Instagram" className="hover:text-codomi-navy-light">
-              <Instagram className="h-5 w-5" />
+              <SiInstagram className="h-5 w-5" />
             </a>
           </div>
         </div>
