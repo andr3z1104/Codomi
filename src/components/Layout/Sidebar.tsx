@@ -49,7 +49,7 @@ const Sidebar: React.FC = () => {
   const menuItems = getMenuItems();
 
   return (
-    <aside className="hidden md:block w-64 bg-white shadow-lg border-r border-gray-200">
+    <aside className="hidden md:block w-64 bg-white shadow-lg border-r border-gray-200 rounded-lg my-4">
       <nav className="mt-8 px-4">
         <ul className="space-y-2">
           {menuItems.map((item) => (

@@ -10,11 +10,11 @@ const Header: React.FC = () => {
   const navigate = useNavigate();
 
   return (
-    <header className="bg-codomi-navy text-white shadow-lg">
+    <header className="main-header bg-codomi-navy text-white shadow-lg">
       <div className="w-full px-4 sm:px-6 lg:px-4">
         <div className="flex justify-between items-center h-16">
           <div className="flex items-center ml-12 md:ml-0">
-            <h1 className="text-xl md:text-2xl font-bold font-montserrat">
+            <h1 className="logo text-xl md:text-2xl font-bold font-montserrat">
               CODOMI
             </h1>
             <span className="ml-2 text-xs md:text-sm opacity-80 hidden sm:block">
@@ -49,7 +49,7 @@ const Header: React.FC = () => {
                 variant="outline-white"
                 size="sm"
                 onClick={logout}
-                className="text-xs md:text-sm transition-all duration-200 hover:shadow-md"
+                className="logout-button text-xs md:text-sm transition-all duration-200 hover:shadow-md"
               >
                 <LogOut className="h-3 w-3 md:h-4 md:w-4 mr-1 md:mr-2" />
                 <span className="hidden sm:inline">Cerrar Sesión</span>

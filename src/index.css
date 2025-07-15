@@ -167,3 +167,11 @@
     @apply text-xl;
   }
 }
+
+@media (min-width: 768px) {
+  .main-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+}
