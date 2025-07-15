@@ -86,6 +86,20 @@ const mockUsers: User[] = [
   }
 ];
 
+// Helper function to get user's available buildings
+const getUserBuildings = (user: User): Building[] => {
+  if (user.role === 'admin') {
+    return mockBuildings; // Admin can access all buildings
+  }
+  
+  if (user.role === 'junta' && user.buildingId) {
+    return mockBuildings.filter(b => b.id === user.buildingId);
+  }
+  
+  // For owners, assume they belong to buildings in the first condominium for demo
+  return mockBuildings.filter(b => b.condominiumId === '1');
+};
+
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [selectedBuilding, setSelectedBuilding] = useState<Building | null>(null);
@@ -104,25 +118,28 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const parsedUser = JSON.parse(savedUser);
       setUser(parsedUser);
       
-      // Para usuarios no administradores, establecer condominio y edificio automáticamente
+      // For non-admin users, auto-set condominium and building
       if (parsedUser.role !== 'admin') {
-        // Asumiendo que los usuarios no admin pertenecen al primer condominio por defecto
         const defaultCondominium = mockCondominiums[0];
         setSelectedCondominium(defaultCondominium);
         localStorage.setItem('codomi_selected_condominium', JSON.stringify(defaultCondominium));
         
-        // Si hay un edificio guardado, usarlo; sino, seleccionar el primero disponible
-        if (savedBuilding) {
-          setSelectedBuilding(JSON.parse(savedBuilding));
-        } else {
-          const firstBuilding = mockBuildings.find(b => b.condominiumId === defaultCondominium.id);
-          if (firstBuilding) {
-            setSelectedBuilding(firstBuilding);
-            localStorage.setItem('codomi_selected_building', JSON.stringify(firstBuilding));
+        // Auto-select building if user has only one available building
+        const userBuildings = getUserBuildings(parsedUser);
+        if (userBuildings.length === 1) {
+          setSelectedBuilding(userBuildings[0]);
+          localStorage.setItem('codomi_selected_building', JSON.stringify(userBuildings[0]));
+        } else if (savedBuilding) {
+          const parsedBuilding = JSON.parse(savedBuilding);
+          // Verify the building is still available to the user
+          if (userBuildings.some(b => b.id === parsedBuilding.id)) {
+            setSelectedBuilding(parsedBuilding);
+          } else {
+            localStorage.removeItem('codomi_selected_building');
           }
         }
       } else {
-        // Para administradores, mantener la lógica existente
+        // For admin users, restore saved selections
         if (savedBuilding) {
           setSelectedBuilding(JSON.parse(savedBuilding));
         }
@@ -153,15 +170,20 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         localStorage.removeItem('codomi_selected_condominium');
         localStorage.removeItem('codomi_selected_building');
       } else {
-        // Para usuarios no admin, establecer condominio y edificio por defecto
+        // For non-admin users, auto-set condominium
         const defaultCondominium = mockCondominiums[0];
         setSelectedCondominium(defaultCondominium);
         localStorage.setItem('codomi_selected_condominium', JSON.stringify(defaultCondominium));
         
-        const firstBuilding = mockBuildings.find(b => b.condominiumId === defaultCondominium.id);
-        if (firstBuilding) {
-          setSelectedBuilding(firstBuilding);
-          localStorage.setItem('codomi_selected_building', JSON.stringify(firstBuilding));
+        // Auto-select building if user has only one available
+        const userBuildings = getUserBuildings(foundUser);
+        if (userBuildings.length === 1) {
+          setSelectedBuilding(userBuildings[0]);
+          localStorage.setItem('codomi_selected_building', JSON.stringify(userBuildings[0]));
+        } else {
+          // User must select a building - don't auto-select
+          setSelectedBuilding(null);
+          localStorage.removeItem('codomi_selected_building');
         }
       }
       

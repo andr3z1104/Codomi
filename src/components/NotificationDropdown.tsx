@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { Bell, X } from 'lucide-react';
+import { Bell, X, Clock, AlertTriangle } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -75,63 +75,88 @@ const NotificationDropdown: React.FC = () => {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" size="sm" className="relative">
-          <Bell className={`h-5 w-5 ${unreadCount > 0 ? 'text-yellow-500' : 'text-gray-600'}`} />
+        <Button 
+          variant="ghost" 
+          size="sm" 
+          className="relative bg-white/10 border border-white/20 hover:bg-white/20 hover:border-white/40 transition-all duration-200 text-white"
+        >
+          <Bell className={`h-5 w-5 ${unreadCount > 0 ? 'text-amber-300' : 'text-white'} transition-colors duration-200`} />
           {unreadCount > 0 && (
             <Badge 
               variant="destructive" 
-              className="absolute -top-1 -right-1 h-5 w-5 rounded-full p-0 flex items-center justify-center text-xs"
+              className="absolute -top-2 -right-2 h-5 w-5 rounded-full p-0 flex items-center justify-center text-xs bg-red-500 border-2 border-white animate-pulse"
             >
               {unreadCount}
             </Badge>
           )}
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-80 max-h-96 overflow-y-auto">
-        <div className="p-2 border-b">
-          <h3 className="font-semibold text-sm">Notificaciones</h3>
-          {unreadCount > 0 && (
-            <p className="text-xs text-gray-600">{unreadCount} sin leer</p>
-          )}
+      <DropdownMenuContent 
+        align="end" 
+        className="w-96 max-h-96 overflow-y-auto bg-white shadow-2xl border-0 rounded-xl"
+        sideOffset={8}
+      >
+        <div className="p-4 border-b border-slate-100 bg-gradient-to-r from-codomi-navy to-blue-600 text-white rounded-t-xl">
+          <div className="flex items-center justify-between">
+            <h3 className="font-bold text-lg">Notificaciones</h3>
+            {unreadCount > 0 && (
+              <Badge variant="secondary" className="bg-white/20 text-white border-white/20">
+                {unreadCount} nuevas
+              </Badge>
+            )}
+          </div>
         </div>
+        
         {notifications.length === 0 ? (
-          <div className="p-4 text-center text-gray-500 text-sm">
-            No hay notificaciones
+          <div className="p-8 text-center text-slate-500">
+            <Bell className="h-12 w-12 mx-auto mb-3 text-slate-300" />
+            <p className="text-sm">No hay notificaciones</p>
           </div>
         ) : (
-          notifications.map((notification) => (
-            <DropdownMenuItem
-              key={notification.id}
-              className="p-0 focus:bg-gray-50"
-              onSelect={() => markAsRead(notification.id)}
-            >
-              <div className="w-full p-3 relative">
-                <button
-                  onClick={(e) => removeNotification(notification.id, e)}
-                  className="absolute top-2 right-2 text-gray-400 hover:text-red-500 transition-colors"
-                >
-                  <X className="h-3 w-3" />
-                </button>
-                <div className="pr-6">
-                  <div className="flex items-center gap-2 mb-1">
-                    <h4 className={`text-sm font-medium ${!notification.read ? 'text-gray-900' : 'text-gray-600'}`}>
-                      {notification.title}
-                    </h4>
-                    {notification.urgent && (
-                      <Badge variant="destructive" className="text-xs">
-                        Urgente
-                      </Badge>
-                    )}
-                    {!notification.read && (
-                      <div className="w-2 h-2 bg-blue-500 rounded-full" />
-                    )}
+          <div className="max-h-80 overflow-y-auto">
+            {notifications.map((notification, index) => (
+              <DropdownMenuItem
+                key={notification.id}
+                className="p-0 focus:bg-slate-50 border-b border-slate-50 last:border-b-0"
+                onSelect={() => markAsRead(notification.id)}
+              >
+                <div className="w-full p-4 relative hover:bg-slate-50 transition-colors duration-150">
+                  <button
+                    onClick={(e) => removeNotification(notification.id, e)}
+                    className="absolute top-3 right-3 text-slate-400 hover:text-red-500 transition-colors duration-150 w-6 h-6 flex items-center justify-center rounded-full hover:bg-red-50"
+                  >
+                    <X className="h-3 w-3" />
+                  </button>
+                  
+                  <div className="pr-8">
+                    <div className="flex items-center gap-3 mb-2">
+                      <div className={`w-2 h-2 rounded-full ${!notification.read ? 'bg-blue-500' : 'bg-slate-300'}`} />
+                      <h4 className={`text-sm font-semibold ${!notification.read ? 'text-slate-900' : 'text-slate-600'} flex-1`}>
+                        {notification.title}
+                      </h4>
+                      {notification.urgent && (
+                        <div className="flex items-center gap-1">
+                          <AlertTriangle className="h-3 w-3 text-red-500" />
+                          <Badge variant="destructive" className="text-xs px-2 py-0">
+                            Urgente
+                          </Badge>
+                        </div>
+                      )}
+                    </div>
+                    
+                    <p className="text-xs text-slate-600 mb-2 leading-relaxed">
+                      {notification.message}
+                    </p>
+                    
+                    <div className="flex items-center gap-1 text-xs text-slate-400">
+                      <Clock className="h-3 w-3" />
+                      <span>{notification.date}</span>
+                    </div>
                   </div>
-                  <p className="text-xs text-gray-600 mb-1">{notification.message}</p>
-                  <p className="text-xs text-gray-400">{notification.date}</p>
                 </div>
-              </div>
-            </DropdownMenuItem>
-          ))
+              </DropdownMenuItem>
+            ))}
+          </div>
         )}
       </DropdownMenuContent>
     </DropdownMenu>
