@@ -11,6 +11,7 @@ import AdminDashboard from "./pages/admin/AdminDashboard";
 import AdminAnnouncements from "./pages/admin/AdminAnnouncements";
 import AdminCommunication from "./pages/admin/AdminCommunication";
 import AdminBuildings from "./pages/admin/AdminBuildings";
+import Profile from "./pages/Profile";
 import OwnerDashboard from "./pages/owner/OwnerDashboard";
 import OwnerAnnouncements from "./pages/owner/OwnerAnnouncements";
 import OwnerCommunication from "./pages/owner/OwnerCommunication";
@@ -22,9 +23,14 @@ import NotFound from "./pages/NotFound";
 const queryClient = new QueryClient();
 
 const ProtectedRoute = ({ children, allowedRoles }: { children: React.ReactNode; allowedRoles: string[] }) => {
-  const { user } = useAuth();
+  const { user, selectedBuilding } = useAuth();
   
   if (!user) {
+    return <LoginForm />;
+  }
+  
+  // For admin users, check if they have selected a building
+  if (user.role === 'admin' && !selectedBuilding) {
     return <LoginForm />;
   }
   
@@ -37,14 +43,19 @@ const ProtectedRoute = ({ children, allowedRoles }: { children: React.ReactNode;
 };
 
 const AppRoutes = () => {
-  const { user } = useAuth();
+  const { user, selectedBuilding } = useAuth();
 
   return (
     <Routes>
       <Route path="/" element={<Layout />}>
         <Route index element={
           user ? (
-            <Navigate to={user.role === 'admin' ? '/admin' : user.role === 'junta' ? '/junta' : '/owner'} replace />
+            // For admin users, check if they have completed building selection
+            user.role === 'admin' && !selectedBuilding ? (
+              <LoginForm />
+            ) : (
+              <Navigate to={user.role === 'admin' ? '/admin' : user.role === 'junta' ? '/junta' : '/owner'} replace />
+            )
           ) : (
             <LoginForm />
           )
@@ -69,6 +80,13 @@ const AppRoutes = () => {
         <Route path="/admin/buildings" element={
           <ProtectedRoute allowedRoles={['admin']}>
             <AdminBuildings />
+          </ProtectedRoute>
+        } />
+        
+        {/* Profile Route - Available for all users */}
+        <Route path="/profile" element={
+          <ProtectedRoute allowedRoles={['admin', 'owner', 'junta']}>
+            <Profile />
           </ProtectedRoute>
         } />
         

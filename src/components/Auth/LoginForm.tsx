@@ -1,20 +1,27 @@
-import React, { useState } from 'react';
+
+import React, { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Loader2 } from 'lucide-react';
+import { Loader2, MapPin } from 'lucide-react';
 import CondominiumSelector from '../CondominiumSelector';
-import BuildingSelector from '../BuildingSelector';
 
 const LoginForm: React.FC = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [step, setStep] = useState<'login' | 'condominium' | 'building'>('login');
-  const { login, isLoading, user, selectedCondominium, selectedBuilding, buildings } = useAuth();
+  const { login, isLoading, user, selectedCondominium, selectedBuilding, buildings, selectBuilding } = useAuth();
+
+  // Effect to handle admin flow after successful login
+  useEffect(() => {
+    if (user?.role === 'admin' && step === 'login') {
+      setStep('condominium');
+    }
+  }, [user, step]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -23,13 +30,8 @@ const LoginForm: React.FC = () => {
     const success = await login(email, password);
     if (!success) {
       setError('Credenciales incorrectas. Intente nuevamente.');
-    } else {
-      // Check if user is admin and needs to select condominium/building
-      const loggedInUser = JSON.parse(localStorage.getItem('codomi_user') || '{}');
-      if (loggedInUser.role === 'admin') {
-        setStep('condominium');
-      }
     }
+    // No need to manually set step here - useEffect will handle it
   };
 
   const handleCondominiumSelect = () => {
@@ -38,7 +40,8 @@ const LoginForm: React.FC = () => {
 
   const handleBuildingSelect = () => {
     // Building is selected, user can proceed to dashboard
-    window.location.reload(); // This will redirect to the appropriate dashboard
+    // Force a redirect to the admin dashboard
+    window.location.href = '/admin';
   };
 
   // Show condominium selection for admin after login
@@ -78,7 +81,27 @@ const LoginForm: React.FC = () => {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <BuildingSelector onSelect={handleBuildingSelect} />
+            <div className="space-y-3">
+              {condominiumBuildings.map((building) => (
+                <Button
+                  key={building.id}
+                  variant="outline"
+                  className="w-full justify-start h-auto p-4"
+                  onClick={() => {
+                    selectBuilding(building);
+                    handleBuildingSelect();
+                  }}
+                >
+                  <div className="text-left">
+                    <div className="font-semibold">{building.name}</div>
+                    <div className="text-sm opacity-80 flex items-center gap-1">
+                      <MapPin className="h-3 w-3" />
+                      {building.address}
+                    </div>
+                  </div>
+                </Button>
+              ))}
+            </div>
           </CardContent>
         </Card>
       </div>
