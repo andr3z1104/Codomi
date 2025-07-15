@@ -1,9 +1,10 @@
+
 import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { X, Bell, ChevronDown, ChevronUp, Building2, RefreshCw, Trash2 } from 'lucide-react';
+import { X, Bell, ChevronDown, ChevronUp, Building2, RefreshCw } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/contexts/AuthContext';
 import BuildingSelector from '@/components/BuildingSelector';
@@ -160,13 +161,13 @@ const AdminDashboard: React.FC = () => {
                         {notification.priority}
                       </Badge>
                       <Button
-                        variant="outline"
+                        variant="ghost"
                         size="sm"
                         onClick={() => handleDeleteNotification(notification.id)}
-                        className="p-2 h-8 w-8 border-gray-300 text-gray-600 hover:bg-gray-100 hover:text-gray-800 hover:border-gray-400 transition-colors"
+                        className="p-1 h-6 w-6 text-gray-400 hover:text-red-500 hover:bg-red-50 transition-colors"
                         title="Eliminar notificación"
                       >
-                        <Trash2 className="h-4 w-4" />
+                        <X className="h-4 w-4" />
                       </Button>
                     </div>
                   </AlertDescription>

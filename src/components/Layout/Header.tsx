@@ -2,12 +2,16 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/contexts/AuthContext';
-import { LogOut, User, Settings } from 'lucide-react';
+import { LogOut, User } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 const Header: React.FC = () => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
+
+  const handleProfileClick = () => {
+    navigate('/profile');
+  };
 
   return (
     <header className="main-header bg-codomi-navy text-white shadow-lg">
@@ -24,26 +28,19 @@ const Header: React.FC = () => {
           
           {user && (
             <div className="flex items-center space-x-2 md:space-x-4">
-              <div className="flex items-center space-x-2">
+              <button
+                onClick={handleProfileClick}
+                className="flex items-center space-x-2 text-white hover:bg-white/20 rounded-lg p-2 transition-colors cursor-pointer"
+              >
                 <User className="h-4 w-4 md:h-5 md:w-5" />
                 <div className="text-right">
-                  <div className="flex items-center gap-2">
-                    <p className="text-xs md:text-sm font-medium">{user.name}</p>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => navigate('/profile')}
-                      className="h-6 w-6 p-0 text-white hover:bg-white/20"
-                    >
-                      <Settings className="h-3 w-3" />
-                    </Button>
-                  </div>
+                  <p className="text-xs md:text-sm font-medium">{user.name}</p>
                   <p className="text-xs opacity-80 capitalize">
                     {user.role === 'admin' ? 'Administrador' : 'Propietario'}
                     {user.apartment && ` - ${user.apartment}`}
                   </p>
                 </div>
-              </div>
+              </button>
               
               <Button
                 variant="outline-white"
