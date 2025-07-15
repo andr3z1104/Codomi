@@ -101,13 +101,35 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const savedCondominium = localStorage.getItem('codomi_selected_condominium');
     
     if (savedUser) {
-      setUser(JSON.parse(savedUser));
-    }
-    if (savedBuilding) {
-      setSelectedBuilding(JSON.parse(savedBuilding));
-    }
-    if (savedCondominium) {
-      setSelectedCondominium(JSON.parse(savedCondominium));
+      const parsedUser = JSON.parse(savedUser);
+      setUser(parsedUser);
+      
+      // Para usuarios no administradores, establecer condominio y edificio automáticamente
+      if (parsedUser.role !== 'admin') {
+        // Asumiendo que los usuarios no admin pertenecen al primer condominio por defecto
+        const defaultCondominium = mockCondominiums[0];
+        setSelectedCondominium(defaultCondominium);
+        localStorage.setItem('codomi_selected_condominium', JSON.stringify(defaultCondominium));
+        
+        // Si hay un edificio guardado, usarlo; sino, seleccionar el primero disponible
+        if (savedBuilding) {
+          setSelectedBuilding(JSON.parse(savedBuilding));
+        } else {
+          const firstBuilding = mockBuildings.find(b => b.condominiumId === defaultCondominium.id);
+          if (firstBuilding) {
+            setSelectedBuilding(firstBuilding);
+            localStorage.setItem('codomi_selected_building', JSON.stringify(firstBuilding));
+          }
+        }
+      } else {
+        // Para administradores, mantener la lógica existente
+        if (savedBuilding) {
+          setSelectedBuilding(JSON.parse(savedBuilding));
+        }
+        if (savedCondominium) {
+          setSelectedCondominium(JSON.parse(savedCondominium));
+        }
+      }
     }
     setIsLoading(false);
   }, []);
@@ -124,12 +146,23 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setUser(foundUser);
       localStorage.setItem('codomi_user', JSON.stringify(foundUser));
       
-      // Clear selections for admin users to force fresh selection
       if (foundUser.role === 'admin') {
+        // Clear selections for admin users to force fresh selection
         setSelectedCondominium(null);
         setSelectedBuilding(null);
         localStorage.removeItem('codomi_selected_condominium');
         localStorage.removeItem('codomi_selected_building');
+      } else {
+        // Para usuarios no admin, establecer condominio y edificio por defecto
+        const defaultCondominium = mockCondominiums[0];
+        setSelectedCondominium(defaultCondominium);
+        localStorage.setItem('codomi_selected_condominium', JSON.stringify(defaultCondominium));
+        
+        const firstBuilding = mockBuildings.find(b => b.condominiumId === defaultCondominium.id);
+        if (firstBuilding) {
+          setSelectedBuilding(firstBuilding);
+          localStorage.setItem('codomi_selected_building', JSON.stringify(firstBuilding));
+        }
       }
       
       setIsLoading(false);

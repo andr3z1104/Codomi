@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -43,13 +44,15 @@ const CondominiumSelector: React.FC<CondominiumSelectorProps> = ({ onSelect, sho
           <Button
             key={condominium.id}
             variant={selectedCondominium?.id === condominium.id ? "default" : "outline"}
-            className="h-auto p-6 justify-start"
+            className="h-auto p-4 md:p-6 justify-start text-left"
             onClick={() => handleCondominiumSelect(condominium)}
           >
             <div className="flex items-center gap-3 w-full min-w-0">
-              <Building2 className="h-6 w-6 text-codomi-navy flex-shrink-0" />
+              <Building2 className="h-5 w-5 md:h-6 md:w-6 text-codomi-navy flex-shrink-0" />
               <div className="text-left min-w-0 flex-1">
-                <h3 className="font-semibold text-lg truncate">{condominium.name}</h3>
+                <h3 className="font-semibold text-sm md:text-lg leading-tight break-words whitespace-normal">
+                  {condominium.name}
+                </h3>
               </div>
             </div>
           </Button>

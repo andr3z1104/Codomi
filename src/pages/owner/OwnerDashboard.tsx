@@ -1,155 +1,78 @@
 
 import React from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Bell, MessageSquare, Calendar, FileText, Building2 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
+import UserBuildingSelector from '@/components/UserBuildingSelector';
 
 const OwnerDashboard: React.FC = () => {
-  const { user } = useAuth();
+  const { user, selectedBuilding } = useAuth();
 
-  const financialData = {
-    debt: 0,
-    credit: 150,
-    balance: 150,
-    currentFee: 420,
-    dueDate: '15/12/2024'
-  };
-
-  const recentPayments = [
-    { month: 'Noviembre 2024', amount: '$420', status: 'Pagado', date: '10/11/2024' },
-    { month: 'Octubre 2024', amount: '$420', status: 'Pagado', date: '08/10/2024' },
-    { month: 'Septiembre 2024', amount: '$420', status: 'Pagado', date: '12/09/2024' },
+  // Mock data para el dashboard
+  const stats = [
+    { title: 'Anuncios Nuevos', value: '3', icon: Bell, color: 'text-blue-600' },
+    { title: 'Mensajes', value: '12', icon: MessageSquare, color: 'text-green-600' },
+    { title: 'Próximos Eventos', value: '2', icon: Calendar, color: 'text-purple-600' },
+    { title: 'Documentos', value: '8', icon: FileText, color: 'text-orange-600' },
   ];
 
-  const announcements = [
-    { id: 1, title: 'Mantenimiento de Ascensores', date: '12/12/2024', type: 'info' },
-    { id: 2, title: 'Reunión de Consorcio', date: '20/12/2024', type: 'important' },
-    { id: 3, title: 'Horarios de Limpieza', date: '10/12/2024', type: 'info' },
+  const recentAnnouncements = [
+    { id: 1, title: 'Mantenimiento de Ascensores', date: '2024-01-15', urgent: true },
+    { id: 2, title: 'Reunión de Propietarios', date: '2024-01-20', urgent: false },
+    { id: 3, title: 'Corte de Agua Programado', date: '2024-01-18', urgent: true },
   ];
 
   return (
     <div className="space-y-6">
-      <div className="flex justify-between items-center">
+      <div className="flex items-center gap-3">
+        <Building2 className="h-8 w-8 text-codomi-navy" />
         <div>
-          <h1 className="text-3xl font-bold text-codomi-navy">Bienvenido, {user?.name}</h1>
-          <p className="text-gray-600 mt-1">{user?.apartment}</p>
+          <h1 className="text-3xl font-bold text-codomi-navy">Dashboard Propietario</h1>
+          <p className="text-gray-600">Bienvenido, {user?.name}</p>
         </div>
-        <Badge variant="outline" className="text-sm">
-          Propietario
-        </Badge>
       </div>
 
-      {/* Financial Summary */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <Card className="border-l-4 border-l-red-500">
-          <CardHeader className="pb-2">
-            <CardDescription>Deuda Pendiente</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-red-600">
-              ${financialData.debt}
-            </div>
-            <p className="text-sm text-gray-600 mt-1">Sin deudas pendientes</p>
-          </CardContent>
-        </Card>
+      {/* Selector de Edificio */}
+      <UserBuildingSelector />
 
-        <Card className="border-l-4 border-l-green-500">
-          <CardHeader className="pb-2">
-            <CardDescription>Saldo a Favor</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-green-600">
-              ${financialData.credit}
-            </div>
-            <p className="text-sm text-gray-600 mt-1">Pagos adelantados</p>
-          </CardContent>
-        </Card>
-
-        <Card className="border-l-4 border-l-codomi-navy">
-          <CardHeader className="pb-2">
-            <CardDescription>Balance Total</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-codomi-navy">
-              ${financialData.balance}
-            </div>
-            <p className="text-sm text-gray-600 mt-1">Estado favorable</p>
-          </CardContent>
-        </Card>
+      {/* Estadísticas */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        {stats.map((stat, index) => (
+          <Card key={index}>
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-gray-600">{stat.title}</p>
+                  <p className="text-3xl font-bold text-gray-900">{stat.value}</p>
+                </div>
+                <stat.icon className={`h-8 w-8 ${stat.color}`} />
+              </div>
+            </CardContent>
+          </Card>
+        ))}
       </div>
 
-      {/* Current Fee */}
+      {/* Anuncios Recientes */}
       <Card>
         <CardHeader>
-          <CardTitle className="text-codomi-navy">Cuota Actual</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="flex justify-between items-center">
-            <div>
-              <p className="text-2xl font-bold text-codomi-navy">
-                ${financialData.currentFee}
-              </p>
-              <p className="text-sm text-gray-600">
-                Vencimiento: {financialData.dueDate}
-              </p>
-            </div>
-            <Button 
-              className="bg-codomi-navy hover:bg-codomi-navy-dark"
-              onClick={() => window.location.href = '/owner/payments'}
-            >
-              Pagar Ahora
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Announcements */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-codomi-navy">Avisos Recientes</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-3">
-            {announcements.map((announcement) => (
-              <Alert key={announcement.id} className="border-l-4 border-l-codomi-navy">
-                <AlertDescription className="flex justify-between items-center">
-                  <div>
-                    <p className="font-medium">{announcement.title}</p>
-                    <p className="text-sm text-gray-600">{announcement.date}</p>
-                  </div>
-                  {announcement.type === 'important' && (
-                    <Badge variant="destructive" className="text-xs">
-                      Importante
-                    </Badge>
-                  )}
-                </AlertDescription>
-              </Alert>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Recent Payments */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-codomi-navy">Pagos Recientes</CardTitle>
+          <CardTitle>Anuncios Recientes</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
-            {recentPayments.map((payment, index) => (
-              <div key={index} className="flex justify-between items-center py-2 border-b border-gray-100 last:border-b-0">
-                <div>
-                  <p className="font-medium">{payment.month}</p>
-                  <p className="text-sm text-gray-600">{payment.date}</p>
+            {recentAnnouncements.map((announcement) => (
+              <div key={announcement.id} className="flex items-center justify-between p-4 border rounded-lg">
+                <div className="flex items-center gap-3">
+                  <div className={`w-3 h-3 rounded-full ${announcement.urgent ? 'bg-red-500' : 'bg-gray-300'}`} />
+                  <div>
+                    <h3 className="font-semibold">{announcement.title}</h3>
+                    <p className="text-sm text-gray-600">{announcement.date}</p>
+                  </div>
                 </div>
-                <div className="text-right">
-                  <p className="font-semibold">{payment.amount}</p>
-                  <Badge variant="outline" className="text-xs">
-                    {payment.status}
-                  </Badge>
-                </div>
+                {announcement.urgent && (
+                  <span className="px-2 py-1 text-xs font-semibold text-red-800 bg-red-100 rounded-full">
+                    Urgente
+                  </span>
+                )}
               </div>
             ))}
           </div>
