@@ -91,9 +91,9 @@ const NotificationDropdown: React.FC = () => {
           )}
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent 
-        align="end" 
-        className="w-96 max-h-96 overflow-y-auto bg-white shadow-2xl border-0 rounded-xl"
+      <DropdownMenuContent
+        align="end"
+        className="w-96 max-h-96 bg-white shadow-2xl border-0 rounded-xl"
         sideOffset={8}
       >
         <div className="p-4 border-b border-slate-100 bg-codomi-navy text-white rounded-t-xl">
