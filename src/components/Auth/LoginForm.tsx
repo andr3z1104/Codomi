@@ -16,12 +16,12 @@ const LoginForm: React.FC = () => {
   const [step, setStep] = useState<'login' | 'condominium' | 'building'>('login');
   const { login, isLoading, user, selectedCondominium, selectedBuilding, buildings, selectBuilding } = useAuth();
 
-  // Move to condominium selection after successful login
+  // Move through onboarding steps based on selected entities
   useEffect(() => {
-    if (user && step === 'login') {
-      setStep('condominium');
-    }
-  }, [user, step]);
+    if (!user) return;
+    if (!selectedCondominium) setStep('condominium');
+    else if (!selectedBuilding) setStep('building');
+  }, [user, selectedCondominium, selectedBuilding]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
