@@ -1,26 +1,28 @@
 
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Bell, MessageSquare, Calendar, FileText, Building2 } from 'lucide-react';
+import { Building2, CreditCard } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 import { useAuth } from '@/contexts/AuthContext';
 import UserBuildingSelector from '@/components/UserBuildingSelector';
 
 const OwnerDashboard: React.FC = () => {
   const { user, selectedBuilding } = useAuth();
 
-  // Mock data para el dashboard
-  const stats = [
-    { title: 'Anuncios Nuevos', value: '3', icon: Bell, color: 'text-blue-600' },
-    { title: 'Mensajes', value: '12', icon: MessageSquare, color: 'text-green-600' },
-    { title: 'Próximos Eventos', value: '2', icon: Calendar, color: 'text-purple-600' },
-    { title: 'Documentos', value: '8', icon: FileText, color: 'text-orange-600' },
-  ];
+  // Mock data del balance del propietario
+  const balance = {
+    amount: 125000, // Monto en pesos
+    due: 45000, // Monto que debe
+    lastPayment: '2024-01-10',
+    nextDue: '2024-02-15'
+  };
 
-  const recentAnnouncements = [
-    { id: 1, title: 'Mantenimiento de Ascensores', date: '2024-01-15', urgent: true },
-    { id: 2, title: 'Reunión de Propietarios', date: '2024-01-20', urgent: false },
-    { id: 3, title: 'Corte de Agua Programado', date: '2024-01-18', urgent: true },
-  ];
+  const formatCurrency = (amount: number) => {
+    return new Intl.NumberFormat('es-CL', {
+      style: 'currency',
+      currency: 'CLP'
+    }).format(amount);
+  };
 
   return (
     <div className="space-y-6">
@@ -35,46 +37,72 @@ const OwnerDashboard: React.FC = () => {
       {/* Selector de Edificio */}
       <UserBuildingSelector />
 
-      {/* Estadísticas */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        {stats.map((stat, index) => (
-          <Card key={index}>
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-gray-600">{stat.title}</p>
-                  <p className="text-3xl font-bold text-gray-900">{stat.value}</p>
-                </div>
-                <stat.icon className={`h-8 w-8 ${stat.color}`} />
+      {/* Balance del Propietario */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Balance Principal */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <CreditCard className="h-5 w-5" />
+              Balance Actual
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              <div>
+                <p className="text-sm text-gray-600">Saldo Disponible</p>
+                <p className="text-3xl font-bold text-green-600">{formatCurrency(balance.amount)}</p>
               </div>
-            </CardContent>
-          </Card>
-        ))}
+              <div>
+                <p className="text-sm text-gray-600">Último Pago</p>
+                <p className="text-lg">{balance.lastPayment}</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Monto a Pagar */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-red-600">Monto Pendiente</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              <div>
+                <p className="text-sm text-gray-600">Debe</p>
+                <p className="text-3xl font-bold text-red-600">{formatCurrency(balance.due)}</p>
+              </div>
+              <div>
+                <p className="text-sm text-gray-600">Vencimiento</p>
+                <p className="text-lg mb-4">{balance.nextDue}</p>
+                <Button className="w-full bg-codomi-navy hover:bg-codomi-navy/90">
+                  Pagar Ahora
+                </Button>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
       </div>
 
-      {/* Anuncios Recientes */}
+      {/* Información Adicional */}
       <Card>
         <CardHeader>
-          <CardTitle>Anuncios Recientes</CardTitle>
+          <CardTitle>Resumen de Pagos</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="space-y-4">
-            {recentAnnouncements.map((announcement) => (
-              <div key={announcement.id} className="flex items-center justify-between p-4 border rounded-lg">
-                <div className="flex items-center gap-3">
-                  <div className={`w-3 h-3 rounded-full ${announcement.urgent ? 'bg-red-500' : 'bg-gray-300'}`} />
-                  <div>
-                    <h3 className="font-semibold">{announcement.title}</h3>
-                    <p className="text-sm text-gray-600">{announcement.date}</p>
-                  </div>
-                </div>
-                {announcement.urgent && (
-                  <span className="px-2 py-1 text-xs font-semibold text-red-800 bg-red-100 rounded-full">
-                    Urgente
-                  </span>
-                )}
-              </div>
-            ))}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="text-center p-4 bg-green-50 rounded-lg">
+              <p className="text-sm text-gray-600">Pagos al Día</p>
+              <p className="text-2xl font-bold text-green-600">8</p>
+            </div>
+            <div className="text-center p-4 bg-yellow-50 rounded-lg">
+              <p className="text-sm text-gray-600">Pendientes</p>
+              <p className="text-2xl font-bold text-yellow-600">1</p>
+            </div>
+            <div className="text-center p-4 bg-blue-50 rounded-lg">
+              <p className="text-sm text-gray-600">Total Pagado (Año)</p>
+              <p className="text-2xl font-bold text-blue-600">{formatCurrency(1500000)}</p>
+            </div>
           </div>
         </CardContent>
       </Card>

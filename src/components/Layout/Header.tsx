@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { useAuth } from '@/contexts/AuthContext';
 import { LogOut, User } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import NotificationDropdown from '@/components/NotificationDropdown';
 
 const Header: React.FC = () => {
   const { user, logout } = useAuth();
@@ -28,6 +29,9 @@ const Header: React.FC = () => {
           
           {user && (
             <div className="flex items-center space-x-2 md:space-x-4">
+              {/* Notificaciones */}
+              <NotificationDropdown />
+              
               <button
                 onClick={handleProfileClick}
                 className="flex items-center space-x-2 text-white hover:bg-white/20 rounded-lg p-2 transition-colors cursor-pointer"
