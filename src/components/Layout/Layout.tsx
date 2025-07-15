@@ -15,11 +15,9 @@ const Layout: React.FC = () => {
   if (!user) {
     return (
       <div className="min-h-screen bg-codomi-gray flex flex-col w-full">
-        <Header />
         <main className="flex-1 w-full">
           <Outlet />
         </main>
-        <Footer />
       </div>
     );
   }

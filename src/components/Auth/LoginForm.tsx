@@ -58,7 +58,7 @@ const LoginForm: React.FC = () => {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 to-blue-50 p-4">
         <Card className="w-full max-w-2xl shadow-xl border-0">
-          <CardHeader className="text-center bg-gradient-to-r from-codomi-navy to-blue-600 text-white rounded-t-lg">
+          <CardHeader className="text-center bg-codomi-navy text-white rounded-t-lg">
             <CardTitle className="text-2xl font-bold">
               Seleccionar Condominio
             </CardTitle>
@@ -82,7 +82,7 @@ const LoginForm: React.FC = () => {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 to-blue-50 p-4">
         <Card className="w-full max-w-2xl shadow-xl border-0">
-          <CardHeader className="text-center bg-gradient-to-r from-codomi-navy to-blue-600 text-white rounded-t-lg">
+          <CardHeader className="text-center bg-codomi-navy text-white rounded-t-lg">
             <CardTitle className="text-2xl font-bold">
               Seleccionar Edificio
             </CardTitle>
@@ -136,7 +136,7 @@ const LoginForm: React.FC = () => {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 to-blue-50 p-4">
       <Card className="w-full max-w-md shadow-xl border-0">
-        <CardHeader className="text-center bg-gradient-to-r from-codomi-navy to-blue-600 text-white rounded-t-lg">
+        <CardHeader className="text-center bg-codomi-navy text-white rounded-t-lg">
           <div className="w-16 h-16 bg-white/20 rounded-2xl flex items-center justify-center mx-auto mb-4">
             <span className="text-white font-bold text-2xl">C</span>
           </div>
@@ -188,7 +188,7 @@ const LoginForm: React.FC = () => {
 
             <Button
               type="submit"
-              className="w-full bg-gradient-to-r from-codomi-navy to-blue-600 hover:from-codomi-navy-dark hover:to-blue-700 text-white text-base py-6 font-semibold rounded-lg shadow-lg hover:shadow-xl transition-all duration-200"
+              className="w-full bg-codomi-navy hover:bg-codomi-navy-dark text-white text-base py-6 font-semibold rounded-lg shadow-lg hover:shadow-xl transition-all duration-200"
               disabled={isLoading}
             >
               {isLoading ? (
