@@ -23,14 +23,14 @@ import NotFound from "./pages/NotFound";
 const queryClient = new QueryClient();
 
 const ProtectedRoute = ({ children, allowedRoles }: { children: React.ReactNode; allowedRoles: string[] }) => {
-  const { user, selectedBuilding } = useAuth();
+  const { user, selectedBuilding, selectedCondominium } = useAuth();
   
   if (!user) {
     return <LoginForm />;
   }
   
-  // For admin users, check if they have selected a building
-  if (user.role === 'admin' && !selectedBuilding) {
+  // Require condominium and building selection for all users
+  if (!selectedCondominium || !selectedBuilding) {
     return <LoginForm />;
   }
   
@@ -43,15 +43,14 @@ const ProtectedRoute = ({ children, allowedRoles }: { children: React.ReactNode;
 };
 
 const AppRoutes = () => {
-  const { user, selectedBuilding } = useAuth();
+  const { user, selectedBuilding, selectedCondominium } = useAuth();
 
   return (
     <Routes>
       <Route path="/" element={<Layout />}>
         <Route index element={
           user ? (
-            // For admin users, check if they have completed building selection
-            user.role === 'admin' && !selectedBuilding ? (
+            !selectedCondominium || !selectedBuilding ? (
               <LoginForm />
             ) : (
               <Navigate to={user.role === 'admin' ? '/admin' : user.role === 'junta' ? '/junta' : '/owner'} replace />
