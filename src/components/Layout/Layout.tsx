@@ -13,13 +13,21 @@ const Layout: React.FC = () => {
   const isMobile = useIsMobile();
 
   if (!user) {
-    return <Outlet />;
+    return (
+      <div className="min-h-screen bg-codomi-gray flex flex-col w-full">
+        <Header />
+        <main className="flex-1 w-full">
+          <Outlet />
+        </main>
+        <Footer />
+      </div>
+    );
   }
 
   return (
-    <div className="min-h-screen bg-codomi-gray flex flex-col">
+    <div className="min-h-screen bg-codomi-gray flex flex-col w-full">
       <Header />
-      <div className="flex flex-1">
+      <div className="flex flex-1 w-full">
         {isMobile ? <MobileSidebar /> : <Sidebar />}
         <main className="flex-1 p-4 md:p-6">
           <Outlet />

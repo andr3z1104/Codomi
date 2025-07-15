@@ -80,7 +80,7 @@ const NotificationDropdown: React.FC = () => {
           size="sm" 
           className="relative bg-white/10 border border-white/20 hover:bg-white/20 hover:border-white/40 transition-all duration-200 text-white"
         >
-          <Bell className={`h-5 w-5 ${unreadCount > 0 ? 'text-amber-300' : 'text-white'} transition-colors duration-200`} />
+          <Bell className="h-5 w-5 text-white transition-colors duration-200" />
           {unreadCount > 0 && (
             <Badge 
               variant="destructive" 
@@ -96,7 +96,7 @@ const NotificationDropdown: React.FC = () => {
         className="w-96 max-h-96 overflow-y-auto bg-white shadow-2xl border-0 rounded-xl"
         sideOffset={8}
       >
-        <div className="p-4 border-b border-slate-100 bg-gradient-to-r from-codomi-navy to-blue-600 text-white rounded-t-xl">
+        <div className="p-4 border-b border-slate-100 bg-codomi-navy text-white rounded-t-xl">
           <div className="flex items-center justify-between">
             <h3 className="font-bold text-lg">Notificaciones</h3>
             {unreadCount > 0 && (

@@ -4,8 +4,8 @@ import {SiFacebook, SiX, SiInstagram} from 'react-icons/si';
 
 const Footer: React.FC = () => {
   return (
-    <footer className="bg-codomi-gray border-t border-gray-200 text-codomi-navy py-6 mt-auto">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <footer className="bg-codomi-gray border-t border-gray-200 text-codomi-navy py-6 mt-auto w-full">
+      <div className="w-full px-4 sm:px-6 lg:px-8">
         <div className="flex flex-col items-end">
           <h2 className="text-lg font-bold mb-2 text-codomi-navy">CODOMI</h2>
           <div className="text-sm text-right space-y-1 text-gray-600">

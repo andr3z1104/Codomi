@@ -15,10 +15,10 @@ const Header: React.FC = () => {
   };
 
   return (
-    <header className="bg-gradient-to-r from-codomi-navy to-blue-700 text-white shadow-xl border-b border-blue-800">
-      <div className="w-full px-4 sm:px-6 lg:px-4">
+    <header className="bg-codomi-navy text-white shadow-xl border-b border-blue-800 w-full">
+      <div className="w-full px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
-          <div className="flex items-center ml-12 md:ml-0">
+          <div className="flex items-center">
             <div className="flex items-center gap-3">
               <div className="w-8 h-8 bg-white/20 rounded-lg flex items-center justify-center">
                 <span className="text-white font-bold text-sm">C</span>
@@ -36,7 +36,7 @@ const Header: React.FC = () => {
           
           {user && (
             <div className="flex items-center space-x-3 md:space-x-4">
-              {/* Notificaciones - Repositioned closer to logout */}
+              {/* Notificaciones - Positioned closer to logout */}
               <NotificationDropdown />
               
               <button

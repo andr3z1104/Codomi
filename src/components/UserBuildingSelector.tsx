@@ -26,7 +26,7 @@ const UserBuildingSelector: React.FC = () => {
   }
 
   return (
-    <Card className="border-0 shadow-md bg-gradient-to-r from-blue-50 to-indigo-50 hover:shadow-lg transition-shadow duration-300">
+    <Card className="border-0 shadow-md bg-blue-50 hover:shadow-lg transition-shadow duration-300">
       <CardHeader className="pb-4">
         <CardTitle className="text-lg flex items-center gap-3">
           <div className="p-2 bg-blue-100 rounded-lg">
