@@ -14,14 +14,16 @@ const LoginForm: React.FC = () => {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [step, setStep] = useState<'login' | 'condominium' | 'building'>('login');
-  const { login, isLoading, user, selectedCondominium, selectedBuilding, buildings, selectBuilding } = useAuth();
+  const { login, isLoading, user, selectedCondominium, selectedBuilding, getUserCondominiums, getUserBuildings, selectBuilding } = useAuth();
 
-  // Effect to handle admin flow after successful login
+  // Effect to handle flow after successful login for all users
   useEffect(() => {
     if (user && step === 'login') {
+
       setStep('condominium');
     }
   }, [user, step]);
+
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -47,8 +49,10 @@ const LoginForm: React.FC = () => {
     }
   };
 
+
   // Show condominium selection after login
   if (step === 'condominium') {
+
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 to-blue-50 p-4">
         <Card className="w-full max-w-2xl shadow-xl border-0">
@@ -68,9 +72,11 @@ const LoginForm: React.FC = () => {
     );
   }
 
+
   // Show building selection once a condominium is chosen
   if (step === 'building' && selectedCondominium) {
     const condominiumBuildings = buildings.filter(b => b.condominiumId === selectedCondominium?.id);
+
     
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 to-blue-50 p-4">
@@ -80,10 +86,7 @@ const LoginForm: React.FC = () => {
               Seleccionar Edificio
             </CardTitle>
             <CardDescription className="text-blue-100">
-              {user?.role === 'admin' 
-                ? `Selecciona el edificio de ${selectedCondominium?.name} donde deseas trabajar`
-                : 'Selecciona tu edificio para acceder al sistema'
-              }
+              Selecciona el edificio de {selectedCondominium?.name} donde deseas trabajar
             </CardDescription>
           </CardHeader>
           <CardContent className="p-6">

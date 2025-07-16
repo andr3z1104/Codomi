@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Building2, CreditCard, Calendar, History, AlertCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/contexts/AuthContext';
-import UserBuildingSelector from '@/components/UserBuildingSelector';
+import UserCondominiumBuildingSelector from '@/components/UserCondominiumBuildingSelector';
 import { Badge } from '@/components/ui/badge';
 
 const OwnerDashboard: React.FC = () => {
@@ -89,7 +89,7 @@ const OwnerDashboard: React.FC = () => {
           </div>
 
           {/* Building Selector - More Prominent */}
-          <UserBuildingSelector />
+          <UserCondominiumBuildingSelector />
         </div>
 
         {/* Balance Cards */}
