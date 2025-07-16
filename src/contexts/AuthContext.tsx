@@ -118,6 +118,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const parsedUser = JSON.parse(savedUser);
       setUser(parsedUser);
 
+
       const userBuildings = getUserBuildings(parsedUser);
       setBuildings(userBuildings);
       const userCondoIds = Array.from(new Set(userBuildings.map(b => b.condominiumId)));
@@ -157,12 +158,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setUser(foundUser);
       localStorage.setItem('codomi_user', JSON.stringify(foundUser));
 
+
       const userBuildings = getUserBuildings(foundUser);
       setBuildings(userBuildings);
       const userCondoIds = Array.from(new Set(userBuildings.map(b => b.condominiumId)));
       setCondominiums(
         mockCondominiums.filter(c => userCondoIds.includes(c.id))
       );
+
 
       // Clear previous selections so every user chooses again
       setSelectedCondominium(null);
