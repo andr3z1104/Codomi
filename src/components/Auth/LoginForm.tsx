@@ -14,20 +14,32 @@ const LoginForm: React.FC = () => {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [step, setStep] = useState<'login' | 'condominium' | 'building'>('login');
-  const { login, isLoading, user, selectedCondominium, selectedBuilding, buildings, selectBuilding } = useAuth();
+  const { login, isLoading, user, selectedCondominium, selectedBuilding, getUserCondominiums, getUserBuildings, selectBuilding } = useAuth();
 
-  // Effect to handle admin flow after successful login
+  // Effect to handle flow after successful login for all users
   useEffect(() => {
-    if (user?.role === 'admin' && step === 'login') {
-      setStep('condominium');
-    } else if (user?.role !== 'admin' && step === 'login') {
-      // For non-admin users, check if building selection is required
-      const userBuildings = buildings.filter(b => b.condominiumId === selectedCondominium?.id);
-      if (userBuildings.length > 1 && !selectedBuilding) {
-        setStep('building');
+    if (user && step === 'login') {
+      // Check if user needs to select condominium
+      const userCondominiums = getUserCondominiums();
+      if (userCondominiums.length > 1 || !selectedCondominium) {
+        if (userCondominiums.length > 1) {
+          setStep('condominium');
+        } else if (userCondominiums.length === 1) {
+          // Single condominium, check building
+          const userBuildings = getUserBuildings(userCondominiums[0].id);
+          if (userBuildings.length > 1 && !selectedBuilding) {
+            setStep('building');
+          }
+        }
+      } else if (selectedCondominium && !selectedBuilding) {
+        // Has condominium, check if building selection is needed
+        const userBuildings = getUserBuildings(selectedCondominium.id);
+        if (userBuildings.length > 1) {
+          setStep('building');
+        }
       }
     }
-  }, [user, step, selectedCondominium, selectedBuilding, buildings]);
+  }, [user, step, selectedCondominium, selectedBuilding, getUserCondominiums, getUserBuildings]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -53,8 +65,8 @@ const LoginForm: React.FC = () => {
     }
   };
 
-  // Show condominium selection for admin after login
-  if (user?.role === 'admin' && step === 'condominium') {
+  // Show condominium selection for all users after login
+  if (user && step === 'condominium') {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 to-blue-50 p-4">
         <Card className="w-full max-w-2xl shadow-xl border-0">
@@ -75,9 +87,8 @@ const LoginForm: React.FC = () => {
   }
 
   // Show building selection for users who need to select a building
-  if ((user?.role === 'admin' && step === 'building' && selectedCondominium) || 
-      (user?.role !== 'admin' && step === 'building')) {
-    const condominiumBuildings = buildings.filter(b => b.condominiumId === selectedCondominium?.id);
+  if (user && step === 'building' && selectedCondominium) {
+    const condominiumBuildings = getUserBuildings(selectedCondominium.id);
     
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 to-blue-50 p-4">
@@ -87,10 +98,7 @@ const LoginForm: React.FC = () => {
               Seleccionar Edificio
             </CardTitle>
             <CardDescription className="text-blue-100">
-              {user?.role === 'admin' 
-                ? `Selecciona el edificio de ${selectedCondominium?.name} donde deseas trabajar`
-                : 'Selecciona tu edificio para acceder al sistema'
-              }
+              Selecciona el edificio de {selectedCondominium?.name} donde deseas trabajar
             </CardDescription>
           </CardHeader>
           <CardContent className="p-6">

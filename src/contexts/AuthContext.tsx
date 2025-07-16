@@ -35,6 +35,8 @@ interface AuthContextType {
   logout: () => void;
   selectBuilding: (building: Building) => void;
   selectCondominium: (condominium: Condominium) => void;
+  getUserCondominiums: () => Condominium[];
+  getUserBuildings: (condominiumId?: string) => Building[];
   isLoading: boolean;
 }
 
@@ -86,18 +88,37 @@ const mockUsers: User[] = [
   }
 ];
 
-// Helper function to get user's available buildings
-const getUserBuildings = (user: User): Building[] => {
+// Helper function to get user's available condominiums
+const getUserCondominiums = (user: User): Condominium[] => {
   if (user.role === 'admin') {
-    return mockBuildings; // Admin can access all buildings
+    return mockCondominiums; // Admin can access all condominiums
   }
   
   if (user.role === 'junta' && user.buildingId) {
-    return mockBuildings.filter(b => b.id === user.buildingId);
+    const building = mockBuildings.find(b => b.id === user.buildingId);
+    return building ? mockCondominiums.filter(c => c.id === building.condominiumId) : [];
   }
   
-  // For owners, assume they belong to buildings in the first condominium for demo
-  return mockBuildings.filter(b => b.condominiumId === '1');
+  // For owners, assume they belong to the first condominium for demo
+  return mockCondominiums.filter(c => c.id === '1');
+};
+
+// Helper function to get user's available buildings within a condominium
+const getUserBuildings = (user: User, condominiumId?: string): Building[] => {
+  if (user.role === 'admin') {
+    return condominiumId ? mockBuildings.filter(b => b.condominiumId === condominiumId) : mockBuildings;
+  }
+  
+  if (user.role === 'junta' && user.buildingId) {
+    const userBuilding = mockBuildings.find(b => b.id === user.buildingId);
+    if (condominiumId && userBuilding?.condominiumId === condominiumId) {
+      return [userBuilding];
+    }
+    return userBuilding ? [userBuilding] : [];
+  }
+  
+  // For owners, filter by condominium
+  return condominiumId ? mockBuildings.filter(b => b.condominiumId === condominiumId) : mockBuildings.filter(b => b.condominiumId === '1');
 };
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -118,33 +139,36 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const parsedUser = JSON.parse(savedUser);
       setUser(parsedUser);
       
-      // For non-admin users, auto-set condominium and building
-      if (parsedUser.role !== 'admin') {
-        const defaultCondominium = mockCondominiums[0];
-        setSelectedCondominium(defaultCondominium);
-        localStorage.setItem('codomi_selected_condominium', JSON.stringify(defaultCondominium));
+      // For all users, restore saved selections if valid
+      if (savedCondominium && savedBuilding) {
+        const parsedCondominium = JSON.parse(savedCondominium);
+        const parsedBuilding = JSON.parse(savedBuilding);
         
-        // Auto-select building if user has only one available building
-        const userBuildings = getUserBuildings(parsedUser);
-        if (userBuildings.length === 1) {
-          setSelectedBuilding(userBuildings[0]);
-          localStorage.setItem('codomi_selected_building', JSON.stringify(userBuildings[0]));
-        } else if (savedBuilding) {
-          const parsedBuilding = JSON.parse(savedBuilding);
-          // Verify the building is still available to the user
-          if (userBuildings.some(b => b.id === parsedBuilding.id)) {
-            setSelectedBuilding(parsedBuilding);
-          } else {
-            localStorage.removeItem('codomi_selected_building');
-          }
+        // Verify the selections are still valid for the user
+        const userCondominiums = getUserCondominiums(parsedUser);
+        const userBuildings = getUserBuildings(parsedUser, parsedCondominium.id);
+        
+        if (userCondominiums.some(c => c.id === parsedCondominium.id) && 
+            userBuildings.some(b => b.id === parsedBuilding.id)) {
+          setSelectedCondominium(parsedCondominium);
+          setSelectedBuilding(parsedBuilding);
+        } else {
+          // Clear invalid selections
+          localStorage.removeItem('codomi_selected_condominium');
+          localStorage.removeItem('codomi_selected_building');
         }
       } else {
-        // For admin users, restore saved selections
-        if (savedBuilding) {
-          setSelectedBuilding(JSON.parse(savedBuilding));
-        }
-        if (savedCondominium) {
-          setSelectedCondominium(JSON.parse(savedCondominium));
+        // For single building/condominium users, auto-select
+        const userCondominiums = getUserCondominiums(parsedUser);
+        if (userCondominiums.length === 1) {
+          setSelectedCondominium(userCondominiums[0]);
+          localStorage.setItem('codomi_selected_condominium', JSON.stringify(userCondominiums[0]));
+          
+          const userBuildings = getUserBuildings(parsedUser, userCondominiums[0].id);
+          if (userBuildings.length === 1) {
+            setSelectedBuilding(userBuildings[0]);
+            localStorage.setItem('codomi_selected_building', JSON.stringify(userBuildings[0]));
+          }
         }
       }
     }
@@ -163,27 +187,23 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setUser(foundUser);
       localStorage.setItem('codomi_user', JSON.stringify(foundUser));
       
-      if (foundUser.role === 'admin') {
-        // Clear selections for admin users to force fresh selection
-        setSelectedCondominium(null);
-        setSelectedBuilding(null);
-        localStorage.removeItem('codomi_selected_condominium');
-        localStorage.removeItem('codomi_selected_building');
-      } else {
-        // For non-admin users, auto-set condominium
-        const defaultCondominium = mockCondominiums[0];
-        setSelectedCondominium(defaultCondominium);
-        localStorage.setItem('codomi_selected_condominium', JSON.stringify(defaultCondominium));
+      // Clear selections for all users to force fresh selection process
+      setSelectedCondominium(null);
+      setSelectedBuilding(null);
+      localStorage.removeItem('codomi_selected_condominium');
+      localStorage.removeItem('codomi_selected_building');
+      
+      // Auto-select for users with single condominium/building
+      const userCondominiums = getUserCondominiums(foundUser);
+      if (userCondominiums.length === 1) {
+        const condominium = userCondominiums[0];
+        setSelectedCondominium(condominium);
+        localStorage.setItem('codomi_selected_condominium', JSON.stringify(condominium));
         
-        // Auto-select building if user has only one available
-        const userBuildings = getUserBuildings(foundUser);
+        const userBuildings = getUserBuildings(foundUser, condominium.id);
         if (userBuildings.length === 1) {
           setSelectedBuilding(userBuildings[0]);
           localStorage.setItem('codomi_selected_building', JSON.stringify(userBuildings[0]));
-        } else {
-          // User must select a building - don't auto-select
-          setSelectedBuilding(null);
-          localStorage.removeItem('codomi_selected_building');
         }
       }
       
@@ -224,6 +244,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     localStorage.removeItem('codomi_selected_building');
   };
 
+  const contextGetUserCondominiums = () => {
+    return user ? getUserCondominiums(user) : [];
+  };
+
+  const contextGetUserBuildings = (condominiumId?: string) => {
+    return user ? getUserBuildings(user, condominiumId) : [];
+  };
+
   return (
     <AuthContext.Provider value={{ 
       user, 
@@ -234,7 +262,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       login, 
       logout, 
       selectBuilding,
-      selectCondominium, 
+      selectCondominium,
+      getUserCondominiums: contextGetUserCondominiums,
+      getUserBuildings: contextGetUserBuildings,
       isLoading 
     }}>
       {children}
