@@ -104,8 +104,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [user, setUser] = useState<User | null>(null);
   const [selectedBuilding, setSelectedBuilding] = useState<Building | null>(null);
   const [selectedCondominium, setSelectedCondominium] = useState<Condominium | null>(null);
-  const [buildings] = useState<Building[]>(mockBuildings);
-  const [condominiums] = useState<Condominium[]>(mockCondominiums);
+  const [buildings, setBuildings] = useState<Building[]>([]);
+  const [condominiums, setCondominiums] = useState<Condominium[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -118,17 +118,30 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const parsedUser = JSON.parse(savedUser);
       setUser(parsedUser);
 
+
+      const userBuildings = getUserBuildings(parsedUser);
+      setBuildings(userBuildings);
+      const userCondoIds = Array.from(new Set(userBuildings.map(b => b.condominiumId)));
+      setCondominiums(
+        mockCondominiums.filter(c => userCondoIds.includes(c.id))
+      );
+
       if (savedCondominium) {
-        setSelectedCondominium(JSON.parse(savedCondominium));
+        const parsedCondo = JSON.parse(savedCondominium);
+        if (userCondoIds.includes(parsedCondo.id)) {
+          setSelectedCondominium(parsedCondo);
+        }
       }
 
       if (savedBuilding) {
         const parsedBuilding = JSON.parse(savedBuilding);
-        const userBuildings = getUserBuildings(parsedUser);
         if (userBuildings.some(b => b.id === parsedBuilding.id)) {
           setSelectedBuilding(parsedBuilding);
         }
       }
+    } else {
+      setBuildings([]);
+      setCondominiums([]);
     }
     setIsLoading(false);
   }, []);
@@ -144,6 +157,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     if (foundUser && password === '123456') {
       setUser(foundUser);
       localStorage.setItem('codomi_user', JSON.stringify(foundUser));
+
+
+      const userBuildings = getUserBuildings(foundUser);
+      setBuildings(userBuildings);
+      const userCondoIds = Array.from(new Set(userBuildings.map(b => b.condominiumId)));
+      setCondominiums(
+        mockCondominiums.filter(c => userCondoIds.includes(c.id))
+      );
+
 
       // Clear previous selections so every user chooses again
       setSelectedCondominium(null);
@@ -163,6 +185,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setUser(null);
     setSelectedBuilding(null);
     setSelectedCondominium(null);
+    setBuildings([]);
+    setCondominiums([]);
     localStorage.removeItem('codomi_user');
     localStorage.removeItem('codomi_selected_building');
     localStorage.removeItem('codomi_selected_condominium');
