@@ -127,6 +127,13 @@ const LoginForm: React.FC = () => {
                 ))}
               </div>
             )}
+            <Button
+              variant="outline"
+              className="mt-4"
+              onClick={() => setStep('condominium')}
+            >
+              Volver
+            </Button>
           </CardContent>
         </Card>
       </div>
