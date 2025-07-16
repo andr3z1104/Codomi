@@ -19,27 +19,11 @@ const LoginForm: React.FC = () => {
   // Effect to handle flow after successful login for all users
   useEffect(() => {
     if (user && step === 'login') {
-      // Check if user needs to select condominium
-      const userCondominiums = getUserCondominiums();
-      if (userCondominiums.length > 1 || !selectedCondominium) {
-        if (userCondominiums.length > 1) {
-          setStep('condominium');
-        } else if (userCondominiums.length === 1) {
-          // Single condominium, check building
-          const userBuildings = getUserBuildings(userCondominiums[0].id);
-          if (userBuildings.length > 1 && !selectedBuilding) {
-            setStep('building');
-          }
-        }
-      } else if (selectedCondominium && !selectedBuilding) {
-        // Has condominium, check if building selection is needed
-        const userBuildings = getUserBuildings(selectedCondominium.id);
-        if (userBuildings.length > 1) {
-          setStep('building');
-        }
-      }
+
+      setStep('condominium');
     }
-  }, [user, step, selectedCondominium, selectedBuilding, getUserCondominiums, getUserBuildings]);
+  }, [user, step]);
+
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -65,12 +49,14 @@ const LoginForm: React.FC = () => {
     }
   };
 
-  // Show condominium selection for all users after login
-  if (user && step === 'condominium') {
+
+  // Show condominium selection after login
+  if (step === 'condominium') {
+
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 to-blue-50 p-4">
         <Card className="w-full max-w-2xl shadow-xl border-0">
-          <CardHeader className="text-center bg-gradient-to-r from-codomi-navy to-blue-600 text-white rounded-t-lg">
+          <CardHeader className="text-center bg-codomi-navy text-white rounded-t-lg">
             <CardTitle className="text-2xl font-bold">
               Seleccionar Condominio
             </CardTitle>
@@ -86,14 +72,16 @@ const LoginForm: React.FC = () => {
     );
   }
 
-  // Show building selection for users who need to select a building
-  if (user && step === 'building' && selectedCondominium) {
-    const condominiumBuildings = getUserBuildings(selectedCondominium.id);
+
+  // Show building selection once a condominium is chosen
+  if (step === 'building' && selectedCondominium) {
+    const condominiumBuildings = buildings.filter(b => b.condominiumId === selectedCondominium?.id);
+
     
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 to-blue-50 p-4">
         <Card className="w-full max-w-2xl shadow-xl border-0">
-          <CardHeader className="text-center bg-gradient-to-r from-codomi-navy to-blue-600 text-white rounded-t-lg">
+          <CardHeader className="text-center bg-codomi-navy text-white rounded-t-lg">
             <CardTitle className="text-2xl font-bold">
               Seleccionar Edificio
             </CardTitle>
@@ -135,6 +123,13 @@ const LoginForm: React.FC = () => {
                 ))}
               </div>
             )}
+            <Button
+              variant="outline"
+              className="mt-4"
+              onClick={() => setStep('condominium')}
+            >
+              Volver
+            </Button>
           </CardContent>
         </Card>
       </div>
@@ -144,7 +139,7 @@ const LoginForm: React.FC = () => {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 to-blue-50 p-4">
       <Card className="w-full max-w-md shadow-xl border-0">
-        <CardHeader className="text-center bg-gradient-to-r from-codomi-navy to-blue-600 text-white rounded-t-lg">
+        <CardHeader className="text-center bg-codomi-navy text-white rounded-t-lg">
           <div className="w-16 h-16 bg-white/20 rounded-2xl flex items-center justify-center mx-auto mb-4">
             <span className="text-white font-bold text-2xl">C</span>
           </div>
@@ -196,7 +191,7 @@ const LoginForm: React.FC = () => {
 
             <Button
               type="submit"
-              className="w-full bg-gradient-to-r from-codomi-navy to-blue-600 hover:from-codomi-navy-dark hover:to-blue-700 text-white text-base py-6 font-semibold rounded-lg shadow-lg hover:shadow-xl transition-all duration-200"
+              className="w-full bg-codomi-navy hover:bg-codomi-navy-dark text-white text-base py-6 font-semibold rounded-lg shadow-lg hover:shadow-xl transition-all duration-200"
               disabled={isLoading}
             >
               {isLoading ? (

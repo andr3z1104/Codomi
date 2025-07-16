@@ -125,8 +125,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [user, setUser] = useState<User | null>(null);
   const [selectedBuilding, setSelectedBuilding] = useState<Building | null>(null);
   const [selectedCondominium, setSelectedCondominium] = useState<Condominium | null>(null);
-  const [buildings] = useState<Building[]>(mockBuildings);
-  const [condominiums] = useState<Condominium[]>(mockCondominiums);
+  const [buildings, setBuildings] = useState<Building[]>([]);
+  const [condominiums, setCondominiums] = useState<Condominium[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -134,43 +134,35 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const savedUser = localStorage.getItem('codomi_user');
     const savedBuilding = localStorage.getItem('codomi_selected_building');
     const savedCondominium = localStorage.getItem('codomi_selected_condominium');
-    
+
     if (savedUser) {
       const parsedUser = JSON.parse(savedUser);
       setUser(parsedUser);
-      
-      // For all users, restore saved selections if valid
-      if (savedCondominium && savedBuilding) {
-        const parsedCondominium = JSON.parse(savedCondominium);
-        const parsedBuilding = JSON.parse(savedBuilding);
-        
-        // Verify the selections are still valid for the user
-        const userCondominiums = getUserCondominiums(parsedUser);
-        const userBuildings = getUserBuildings(parsedUser, parsedCondominium.id);
-        
-        if (userCondominiums.some(c => c.id === parsedCondominium.id) && 
-            userBuildings.some(b => b.id === parsedBuilding.id)) {
-          setSelectedCondominium(parsedCondominium);
-          setSelectedBuilding(parsedBuilding);
-        } else {
-          // Clear invalid selections
-          localStorage.removeItem('codomi_selected_condominium');
-          localStorage.removeItem('codomi_selected_building');
-        }
-      } else {
-        // For single building/condominium users, auto-select
-        const userCondominiums = getUserCondominiums(parsedUser);
-        if (userCondominiums.length === 1) {
-          setSelectedCondominium(userCondominiums[0]);
-          localStorage.setItem('codomi_selected_condominium', JSON.stringify(userCondominiums[0]));
-          
-          const userBuildings = getUserBuildings(parsedUser, userCondominiums[0].id);
-          if (userBuildings.length === 1) {
-            setSelectedBuilding(userBuildings[0]);
-            localStorage.setItem('codomi_selected_building', JSON.stringify(userBuildings[0]));
-          }
+
+      const userBuildings = getUserBuildings(parsedUser);
+      setBuildings(userBuildings);
+      const userCondoIds = Array.from(new Set(userBuildings.map(b => b.condominiumId)));
+      setCondominiums(
+        mockCondominiums.filter(c => userCondoIds.includes(c.id))
+      );
+
+      if (savedCondominium) {
+        const parsedCondo = JSON.parse(savedCondominium);
+        if (userCondoIds.includes(parsedCondo.id)) {
+          setSelectedCondominium(parsedCondo);
         }
       }
+
+      if (savedBuilding) {
+        const parsedBuilding = JSON.parse(savedBuilding);
+        if (userBuildings.some(b => b.id === parsedBuilding.id)) {
+          setSelectedBuilding(parsedBuilding);
+
+        }
+      }
+    } else {
+      setBuildings([]);
+      setCondominiums([]);
     }
     setIsLoading(false);
   }, []);
@@ -186,26 +178,20 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     if (foundUser && password === '123456') {
       setUser(foundUser);
       localStorage.setItem('codomi_user', JSON.stringify(foundUser));
-      
-      // Clear selections for all users to force fresh selection process
+
+
+
+      const userBuildings = getUserBuildings(foundUser);
+      setBuildings(userBuildings);
+      const userCondoIds = Array.from(new Set(userBuildings.map(b => b.condominiumId)));
+      setCondominiums(
+        mockCondominiums.filter(c => userCondoIds.includes(c.id))
+      );
+
       setSelectedCondominium(null);
       setSelectedBuilding(null);
       localStorage.removeItem('codomi_selected_condominium');
       localStorage.removeItem('codomi_selected_building');
-      
-      // Auto-select for users with single condominium/building
-      const userCondominiums = getUserCondominiums(foundUser);
-      if (userCondominiums.length === 1) {
-        const condominium = userCondominiums[0];
-        setSelectedCondominium(condominium);
-        localStorage.setItem('codomi_selected_condominium', JSON.stringify(condominium));
-        
-        const userBuildings = getUserBuildings(foundUser, condominium.id);
-        if (userBuildings.length === 1) {
-          setSelectedBuilding(userBuildings[0]);
-          localStorage.setItem('codomi_selected_building', JSON.stringify(userBuildings[0]));
-        }
-      }
       
       setIsLoading(false);
       return true;
@@ -219,6 +205,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setUser(null);
     setSelectedBuilding(null);
     setSelectedCondominium(null);
+    setBuildings([]);
+    setCondominiums([]);
     localStorage.removeItem('codomi_user');
     localStorage.removeItem('codomi_selected_building');
     localStorage.removeItem('codomi_selected_condominium');

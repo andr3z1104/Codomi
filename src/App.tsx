@@ -29,8 +29,8 @@ const ProtectedRoute = ({ children, allowedRoles }: { children: React.ReactNode;
     return <LoginForm />;
   }
   
-  // For admin users, check if they have selected a building
-  if (user.role === 'admin' && !selectedBuilding) {
+  // Require a building to be selected for all users
+  if (!selectedBuilding) {
     return <LoginForm />;
   }
   
@@ -50,8 +50,7 @@ const AppRoutes = () => {
       <Route path="/" element={<Layout />}>
         <Route index element={
           user ? (
-            // For admin users, check if they have completed building selection
-            user.role === 'admin' && !selectedBuilding ? (
+            !selectedBuilding ? (
               <LoginForm />
             ) : (
               <Navigate to={user.role === 'admin' ? '/admin' : user.role === 'junta' ? '/junta' : '/owner'} replace />
