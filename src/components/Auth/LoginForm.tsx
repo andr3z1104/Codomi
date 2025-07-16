@@ -18,16 +18,10 @@ const LoginForm: React.FC = () => {
 
   // Effect to handle admin flow after successful login
   useEffect(() => {
-    if (user?.role === 'admin' && step === 'login') {
+    if (user && step === 'login') {
       setStep('condominium');
-    } else if (user?.role !== 'admin' && step === 'login') {
-      // For non-admin users, check if building selection is required
-      const userBuildings = buildings.filter(b => b.condominiumId === selectedCondominium?.id);
-      if (userBuildings.length > 1 && !selectedBuilding) {
-        setStep('building');
-      }
     }
-  }, [user, step, selectedCondominium, selectedBuilding, buildings]);
+  }, [user, step]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -53,8 +47,8 @@ const LoginForm: React.FC = () => {
     }
   };
 
-  // Show condominium selection for admin after login
-  if (user?.role === 'admin' && step === 'condominium') {
+  // Show condominium selection after login
+  if (step === 'condominium') {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 to-blue-50 p-4">
         <Card className="w-full max-w-2xl shadow-xl border-0">
@@ -74,9 +68,8 @@ const LoginForm: React.FC = () => {
     );
   }
 
-  // Show building selection for users who need to select a building
-  if ((user?.role === 'admin' && step === 'building' && selectedCondominium) || 
-      (user?.role !== 'admin' && step === 'building')) {
+  // Show building selection once a condominium is chosen
+  if (step === 'building' && selectedCondominium) {
     const condominiumBuildings = buildings.filter(b => b.condominiumId === selectedCondominium?.id);
     
     return (
@@ -127,6 +120,13 @@ const LoginForm: React.FC = () => {
                 ))}
               </div>
             )}
+            <Button
+              variant="outline"
+              className="mt-4"
+              onClick={() => setStep('condominium')}
+            >
+              Volver
+            </Button>
           </CardContent>
         </Card>
       </div>
