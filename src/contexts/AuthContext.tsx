@@ -35,8 +35,6 @@ interface AuthContextType {
   logout: () => void;
   selectBuilding: (building: Building) => void;
   selectCondominium: (condominium: Condominium) => void;
-  getUserCondominiums: () => Condominium[];
-  getUserBuildings: (condominiumId?: string) => Building[];
   isLoading: boolean;
 }
 
@@ -88,37 +86,18 @@ const mockUsers: User[] = [
   }
 ];
 
-// Helper function to get user's available condominiums
-const getUserCondominiums = (user: User): Condominium[] => {
+// Helper function to get user's available buildings
+const getUserBuildings = (user: User): Building[] => {
   if (user.role === 'admin') {
-    return mockCondominiums; // Admin can access all condominiums
+    return mockBuildings; // Admin can access all buildings
   }
   
   if (user.role === 'junta' && user.buildingId) {
-    const building = mockBuildings.find(b => b.id === user.buildingId);
-    return building ? mockCondominiums.filter(c => c.id === building.condominiumId) : [];
+    return mockBuildings.filter(b => b.id === user.buildingId);
   }
   
-  // For owners, assume they belong to the first condominium for demo
-  return mockCondominiums.filter(c => c.id === '1');
-};
-
-// Helper function to get user's available buildings within a condominium
-const getUserBuildings = (user: User, condominiumId?: string): Building[] => {
-  if (user.role === 'admin') {
-    return condominiumId ? mockBuildings.filter(b => b.condominiumId === condominiumId) : mockBuildings;
-  }
-  
-  if (user.role === 'junta' && user.buildingId) {
-    const userBuilding = mockBuildings.find(b => b.id === user.buildingId);
-    if (condominiumId && userBuilding?.condominiumId === condominiumId) {
-      return [userBuilding];
-    }
-    return userBuilding ? [userBuilding] : [];
-  }
-  
-  // For owners, filter by condominium
-  return condominiumId ? mockBuildings.filter(b => b.condominiumId === condominiumId) : mockBuildings.filter(b => b.condominiumId === '1');
+  // For owners, assume they belong to buildings in the first condominium for demo
+  return mockBuildings.filter(b => b.condominiumId === '1');
 };
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -139,6 +118,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const parsedUser = JSON.parse(savedUser);
       setUser(parsedUser);
 
+
       const userBuildings = getUserBuildings(parsedUser);
       setBuildings(userBuildings);
       const userCondoIds = Array.from(new Set(userBuildings.map(b => b.condominiumId)));
@@ -157,7 +137,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         const parsedBuilding = JSON.parse(savedBuilding);
         if (userBuildings.some(b => b.id === parsedBuilding.id)) {
           setSelectedBuilding(parsedBuilding);
-
         }
       }
     } else {
@@ -180,7 +159,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       localStorage.setItem('codomi_user', JSON.stringify(foundUser));
 
 
-
       const userBuildings = getUserBuildings(foundUser);
       setBuildings(userBuildings);
       const userCondoIds = Array.from(new Set(userBuildings.map(b => b.condominiumId)));
@@ -188,6 +166,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         mockCondominiums.filter(c => userCondoIds.includes(c.id))
       );
 
+
+      // Clear previous selections so every user chooses again
       setSelectedCondominium(null);
       setSelectedBuilding(null);
       localStorage.removeItem('codomi_selected_condominium');
@@ -232,14 +212,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     localStorage.removeItem('codomi_selected_building');
   };
 
-  const contextGetUserCondominiums = () => {
-    return user ? getUserCondominiums(user) : [];
-  };
-
-  const contextGetUserBuildings = (condominiumId?: string) => {
-    return user ? getUserBuildings(user, condominiumId) : [];
-  };
-
   return (
     <AuthContext.Provider value={{ 
       user, 
@@ -250,9 +222,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       login, 
       logout, 
       selectBuilding,
-      selectCondominium,
-      getUserCondominiums: contextGetUserCondominiums,
-      getUserBuildings: contextGetUserBuildings,
+      selectCondominium, 
       isLoading 
     }}>
       {children}
